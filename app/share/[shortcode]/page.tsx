@@ -6,7 +6,7 @@ export default async function SharePage({ params }: { params: { shortcode: strin
   const supabase = createClient()
   const { data: qr } = await supabase
     .from('qr_codes')
-    .select('id, shortcode, name, destination, style, total_scans')
+    .select('id, shortcode, name, type, destination, style, total_scans')
     .eq('shortcode', params.shortcode)
     .single()
 

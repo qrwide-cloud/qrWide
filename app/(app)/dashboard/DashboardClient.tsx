@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card'
 import { useToast } from '@/components/ui/Toast'
 import { QRPreview } from '@/components/qr/QRPreview'
 import type { Database, QRStyle } from '@/lib/db/schema'
+import { getSavedQRContent } from '@/lib/qr/saved-content'
 
 type QRCode = Database['public']['Tables']['qr_codes']['Row']
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -275,7 +276,12 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
           {filtered.map((qr) => {
             const typeBadge = TYPE_BADGE[qr.type] ?? { label: qr.type, variant: 'default' as const }
             const isRecent = recentIds.includes(qr.id)
-            const qrUrl = `${baseUrl}/s/${qr.shortcode}`
+            const qrContent = getSavedQRContent({
+              type: qr.type,
+              destination: qr.destination,
+              shortcode: qr.shortcode,
+              appUrl: baseUrl,
+            })
 
             return (
               <Card key={qr.id} className="p-4">
@@ -285,7 +291,7 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
                     className="rounded-[10px] border border-[var(--border)] bg-white p-1.5 transition-colors hover:border-[#0066FF]/40"
                     title="View QR code"
                   >
-                    <QRPreview content={qrUrl} style={(qr.style ?? {}) as QRStyle} size={56} />
+                    <QRPreview content={qrContent} style={(qr.style ?? {}) as QRStyle} size={56} />
                   </Link>
 
                   <div className="min-w-0 flex-1">

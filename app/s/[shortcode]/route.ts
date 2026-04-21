@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { redis } from '@/lib/redis'
-import { isAbsoluteHttpUrl, normalizeQrDestination } from '@/lib/qr/url'
+import { normalizeQrDestination } from '@/lib/qr/url'
 
 export const runtime = 'edge'
 
 function getRedirectTarget(destination: string, request: NextRequest): URL {
   const normalized = normalizeQrDestination(destination)
 
-  if (isAbsoluteHttpUrl(normalized)) {
+  try {
     return new URL(normalized)
+  } catch {
+    return new URL('/', request.url)
   }
-
-  return new URL('/', request.url)
 }
 
 export async function GET(

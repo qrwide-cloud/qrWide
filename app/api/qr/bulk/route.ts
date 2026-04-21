@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getPlanLimits } from '@/lib/plans'
 import { createQRCode } from '@/lib/db/queries'
+import { getSavedQRContent } from '@/lib/qr/saved-content'
 
 export async function POST(request: NextRequest) {
   const supabase = createClient()
@@ -65,7 +66,12 @@ export async function POST(request: NextRequest) {
 
           // Generate PNG buffer
           const png = await QRCode.toBuffer(
-            `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'}/s/${qr.shortcode}`,
+            getSavedQRContent({
+              type: qr.type,
+              destination: qr.destination,
+              shortcode: qr.shortcode,
+              appUrl: process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com',
+            }),
             { width: 400, margin: 2, errorCorrectionLevel: 'H' }
           )
 

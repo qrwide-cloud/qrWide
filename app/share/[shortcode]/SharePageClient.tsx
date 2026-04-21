@@ -3,12 +3,14 @@
 import Link from 'next/link'
 import { QRPreview } from '@/components/qr/QRPreview'
 import { QRDownload } from '@/components/qr/QRDownload'
+import { getSavedQRContent } from '@/lib/qr/saved-content'
 
 interface SharePageClientProps {
   qr: {
     id: string
     shortcode: string
     name: string
+    type: string
     destination: string
     style: Record<string, string>
     total_scans: number
@@ -17,7 +19,12 @@ interface SharePageClientProps {
 
 export function SharePageClient({ qr }: SharePageClientProps) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'
-  const scanUrl = `${appUrl}/s/${qr.shortcode}`
+  const qrContent = getSavedQRContent({
+    type: qr.type,
+    destination: qr.destination,
+    shortcode: qr.shortcode,
+    appUrl,
+  })
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-[var(--surface)]">
@@ -27,10 +34,10 @@ export function SharePageClient({ qr }: SharePageClientProps) {
         <p className="text-xs text-[var(--text-secondary)] mb-6 truncate">{qr.destination}</p>
 
         <div className="flex justify-center mb-6">
-          <QRPreview content={scanUrl} style={qr.style} size={240} />
+          <QRPreview content={qrContent} style={qr.style} size={240} />
         </div>
 
-        <QRDownload content={scanUrl} style={qr.style} filename={qr.name} />
+        <QRDownload content={qrContent} style={qr.style} filename={qr.name} />
 
         <p className="mt-4 text-xs text-[var(--text-secondary)]">
           {qr.total_scans.toLocaleString()} total scans
