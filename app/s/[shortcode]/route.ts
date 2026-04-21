@@ -58,8 +58,9 @@ export async function GET(
     return NextResponse.redirect(new URL('/paused', request.url), 302)
   }
 
-  // Step 3: Fire-and-forget scan event tracking (DO NOT await)
-  trackScan(request, record.qrId).catch(() => {})
+  // Step 3: Record the scan before redirecting.
+  // Background work on edge redirects can be dropped, so we prefer reliability here.
+  await trackScan(request, record.qrId)
 
   // Step 4: Instant redirect
   const response = NextResponse.redirect(getRedirectTarget(record.destination, request), 302)
@@ -94,16 +95,18 @@ async function trackScan(request: NextRequest, qrId: string): Promise<void> {
   const statsKey = `qr:stats:${qrId}:day:${today}`
 
   // Increment daily counter in Redis (synced to PG nightly)
-  if (redis) {
-    await redis.incr(statsKey)
-    await redis.expire(statsKey, 172800)
-  }
+  const redisClient = redis
+  const redisPromise = redisClient
+    ? redisClient
+        .incr(statsKey)
+        .then(() => redisClient.expire(statsKey, 172800))
+    : Promise.resolve()
 
   // Write the full scan event and update denormalized counters atomically.
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-  await fetch(`${supabaseUrl}/rest/v1/rpc/record_scan_event`, {
+  const scanPromise = fetch(`${supabaseUrl}/rest/v1/rpc/record_scan_event`, {
     method: 'POST',
     headers: {
       apikey: supabaseKey,
@@ -124,7 +127,14 @@ async function trackScan(request: NextRequest, qrId: string): Promise<void> {
       p_referrer: request.headers.get('referer'),
       p_user_agent: ua,
     }),
+  }).then(async (response) => {
+    if (!response.ok) {
+      const details = await response.text().catch(() => '')
+      throw new Error(`record_scan_event failed: ${response.status} ${details}`)
+    }
   })
+
+  await Promise.all([redisPromise, scanPromise])
 }
 
 function parseUserAgent(ua: string): { deviceType: string; os: string; browser: string } {
