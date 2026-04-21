@@ -187,7 +187,7 @@ export default function HomePage() {
         '@type': 'Organization',
         name: 'QRWide',
         url: 'https://qrwide.com',
-        logo: 'https://qrwide.com/logo.png',
+        logo: 'https://qrwide.com/logo.svg',
         sameAs: ['https://twitter.com/qrwide'],
         contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', url: 'https://qrwide.com' },
       })}} />
