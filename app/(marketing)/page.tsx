@@ -149,11 +149,11 @@ export default function HomePage() {
           style={{ background: 'radial-gradient(circle at 90% 10%, rgba(0,200,150,0.05) 0%, transparent 60%)' }} />
 
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex flex-col-reverse gap-8 py-10 sm:py-12
-                          lg:flex-row lg:items-center lg:gap-12 lg:py-16 xl:py-20">
+          <div className="flex flex-col-reverse pt-4 pb-10 sm:pt-6 sm:pb-12
+                          lg:flex-row lg:items-center lg:gap-12 lg:pt-10 lg:pb-16 xl:pt-12 xl:pb-20">
 
             {/* Copy — left */}
-            <div className="flex-1 lg:max-w-[520px]">
+            <div className="flex-1 mt-6 lg:mt-0 lg:max-w-[520px]">
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-3.5 py-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#0057FF]"
                   style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />

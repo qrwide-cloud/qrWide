@@ -130,6 +130,123 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
   const proTypes      = QR_TYPES.filter((t) => t.plan === 'pro')
   const businessTypes = QR_TYPES.filter((t) => t.plan === 'business')
 
+  function renderFields() {
+    if (!activeConfig) return null
+    return (
+      <div className="space-y-4">
+        <Input
+          label="QR Code Name"
+          placeholder={`e.g. ${activeConfig.label} — Main Campaign`}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        {activeConfig.fields.map((field) => {
+          if (field.type === 'textarea') {
+            return (
+              <div key={field.key} className="flex flex-col gap-1.5">
+                <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
+                <textarea
+                  rows={3}
+                  placeholder={field.placeholder}
+                  value={data[field.key] ?? ''}
+                  onChange={(e) => updateData(field.key, e.target.value)}
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3.5 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[#0057FF]/50 focus:ring-2 focus:ring-[#0057FF]/15 resize-y transition-all"
+                />
+              </div>
+            )
+          }
+          if (field.type === 'select' && field.options) {
+            return (
+              <div key={field.key} className="flex flex-col gap-1.5">
+                <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
+                <select
+                  value={data[field.key] ?? field.options[0].value}
+                  onChange={(e) => updateData(field.key, e.target.value)}
+                  className="w-full h-10 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3.5 text-[14px] text-[var(--text-primary)] outline-none focus:border-[#0057FF]/50 focus:ring-2 focus:ring-[#0057FF]/15 transition-all"
+                >
+                  {field.options.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            )
+          }
+          if (field.type === 'handle') {
+            return (
+              <div key={field.key} className="flex flex-col gap-1.5">
+                <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
+                <div className="flex items-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg)] focus-within:border-[#0057FF]/50 focus-within:ring-2 focus-within:ring-[#0057FF]/15 transition-all">
+                  {field.prefix && (
+                    <span className="border-r border-[var(--border)] bg-[var(--surface)] px-3 text-[13px] text-[var(--text-tertiary)] whitespace-nowrap py-2.5">
+                      {field.prefix}
+                    </span>
+                  )}
+                  <input
+                    type="text"
+                    placeholder={field.placeholder}
+                    value={data[field.key] ?? ''}
+                    onChange={(e) => updateData(field.key, e.target.value.replace('@', ''))}
+                    className="flex-1 min-w-0 bg-transparent px-3 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none"
+                  />
+                </div>
+              </div>
+            )
+          }
+          return (
+            <Input
+              key={field.key}
+              label={field.label}
+              type={field.type as React.HTMLInputTypeAttribute}
+              placeholder={field.placeholder}
+              value={data[field.key] ?? ''}
+              onChange={(e) => updateData(field.key, e.target.value)}
+            />
+          )
+        })}
+        <div className="pt-1 flex flex-wrap items-center gap-4">
+          <Button onClick={handleSave} loading={saving} size="lg" className="glow-blue-sm">
+            Save & Track Scans
+          </Button>
+          <p className="text-[12.5px] text-[var(--text-secondary)]">
+            Creates a dynamic QR you can update anytime
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  function renderInlineUpsell() {
+    if (!activeConfig) return null
+    return (
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <Sparkles className="h-4 w-4 shrink-0" style={{ color: PLAN_COLORS[activeConfig.plan].text }} />
+          <p className="text-[13px] text-[var(--text-secondary)]">
+            <span className="font-semibold text-[var(--text-primary)]">{activeConfig.label}</span>
+            {' '}requires {PLAN_LABELS[activeConfig.plan]}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => switchType(FREE_TYPES[0])}
+            className="text-[12.5px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            Use free type
+          </button>
+          <Link href="/pricing">
+            <Button size="sm" className="glow-blue-sm">
+              Upgrade <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const activeInFree     = freeTypes.some((t) => t.id === type)
+  const activeInPro      = proTypes.some((t) => t.id === type)
+  const activeInBusiness = businessTypes.some((t) => t.id === type)
+
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -145,11 +262,10 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
 
           {/* ══════════════════════════════════════
-              LEFT: Type selector + Form
+              LEFT: Type selector + inline form
           ══════════════════════════════════════ */}
-          <div className="flex-1 space-y-6">
+          <div className="flex-1">
 
-            {/* ── Type selector ── */}
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
 
               {/* Free types */}
@@ -176,6 +292,11 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                     )
                   })}
                 </div>
+                {activeInFree && activeConfig && (
+                  <div className="mt-5 pt-5 border-t border-[var(--border)]">
+                    {renderFields()}
+                  </div>
+                )}
               </div>
 
               {/* Pro types */}
@@ -215,6 +336,11 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                     )
                   })}
                 </div>
+                {activeInPro && activeConfig && (
+                  <div className="mt-5 pt-5 border-t border-[var(--border)]">
+                    {isLocked ? renderInlineUpsell() : renderFields()}
+                  </div>
+                )}
               </div>
 
               {/* Business types */}
@@ -254,151 +380,13 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                     )
                   })}
                 </div>
+                {activeInBusiness && activeConfig && (
+                  <div className="mt-5 pt-5 border-t border-[var(--border)]">
+                    {isLocked ? renderInlineUpsell() : renderFields()}
+                  </div>
+                )}
               </div>
             </div>
-
-            {/* ── Upsell banner for locked types ── */}
-            {isLocked && activeConfig && (
-              <div className="rounded-2xl border p-5 flex items-start gap-4"
-                style={{
-                  borderColor: PLAN_COLORS[activeConfig.plan].border,
-                  background: PLAN_COLORS[activeConfig.plan].bg,
-                }}>
-                <div className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center"
-                  style={{ background: PLAN_COLORS[activeConfig.plan].bg, border: `1px solid ${PLAN_COLORS[activeConfig.plan].border}` }}>
-                  <Sparkles className="h-5 w-5" style={{ color: PLAN_COLORS[activeConfig.plan].text }} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[14px] font-semibold text-[var(--text-primary)]">
-                    {activeConfig.label} QR codes require {PLAN_LABELS[activeConfig.plan]}
-                  </p>
-                  <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
-                    Upgrade to {PLAN_LABELS[activeConfig.plan]} to generate {activeConfig.label} QR codes
-                    and {activeConfig.plan === 'pro' ? '10 more' : '3 more'} types.
-                  </p>
-                  <Link href="/pricing" className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold hover:underline"
-                    style={{ color: PLAN_COLORS[activeConfig.plan].text }}>
-                    View {PLAN_LABELS[activeConfig.plan]} plan
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* ── Form fields ── */}
-            {!isLocked && activeConfig && (
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 space-y-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: activeConfig.iconBg }}>
-                    <activeConfig.icon className="h-4 w-4" style={{ color: activeConfig.iconColor }} />
-                  </div>
-                  <div>
-                    <h2 className="text-[14.5px] font-semibold text-[var(--text-primary)]">{activeConfig.label}</h2>
-                    <p className="text-[12.5px] text-[var(--text-secondary)]">{activeConfig.description}</p>
-                  </div>
-                </div>
-
-                <Input
-                  label="QR Code Name"
-                  placeholder={`e.g. ${activeConfig.label} — Main Campaign`}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-
-                {activeConfig.fields.map((field) => {
-                  if (field.type === 'textarea') {
-                    return (
-                      <div key={field.key} className="flex flex-col gap-1.5">
-                        <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
-                        <textarea
-                          rows={3}
-                          placeholder={field.placeholder}
-                          value={data[field.key] ?? ''}
-                          onChange={(e) => updateData(field.key, e.target.value)}
-                          className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3.5 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[#0057FF]/50 focus:ring-2 focus:ring-[#0057FF]/15 resize-y transition-all"
-                        />
-                      </div>
-                    )
-                  }
-
-                  if (field.type === 'select' && field.options) {
-                    return (
-                      <div key={field.key} className="flex flex-col gap-1.5">
-                        <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
-                        <select
-                          value={data[field.key] ?? field.options[0].value}
-                          onChange={(e) => updateData(field.key, e.target.value)}
-                          className="w-full h-10 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3.5 text-[14px] text-[var(--text-primary)] outline-none focus:border-[#0057FF]/50 focus:ring-2 focus:ring-[#0057FF]/15 transition-all"
-                        >
-                          {field.options.map((o) => (
-                            <option key={o.value} value={o.value}>{o.label}</option>
-                          ))}
-                        </select>
-                      </div>
-                    )
-                  }
-
-                  if (field.type === 'handle') {
-                    return (
-                      <div key={field.key} className="flex flex-col gap-1.5">
-                        <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
-                        <div className="flex items-center gap-0 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg)] focus-within:border-[#0057FF]/50 focus-within:ring-2 focus-within:ring-[#0057FF]/15 transition-all">
-                          {field.prefix && (
-                            <span className="border-r border-[var(--border)] bg-[var(--surface)] px-3 text-[13px] text-[var(--text-tertiary)] whitespace-nowrap py-2.5">
-                              {field.prefix}
-                            </span>
-                          )}
-                          <input
-                            type="text"
-                            placeholder={field.placeholder}
-                            value={data[field.key] ?? ''}
-                            onChange={(e) => updateData(field.key, e.target.value.replace('@', ''))}
-                            className="flex-1 min-w-0 bg-transparent px-3 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none"
-                          />
-                        </div>
-                      </div>
-                    )
-                  }
-
-                  return (
-                    <Input
-                      key={field.key}
-                      label={field.label}
-                      type={field.type as React.HTMLInputTypeAttribute}
-                      placeholder={field.placeholder}
-                      value={data[field.key] ?? ''}
-                      onChange={(e) => updateData(field.key, e.target.value)}
-                    />
-                  )
-                })}
-
-                {/* Save */}
-                <div className="pt-2 flex flex-wrap items-center gap-4">
-                  <Button onClick={handleSave} loading={saving} size="lg" className="glow-blue-sm">
-                    Save & Track Scans
-                  </Button>
-                  <p className="text-[12.5px] text-[var(--text-secondary)]">
-                    Creates a dynamic QR you can update anytime
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Locked CTA */}
-            {isLocked && (
-              <div className="flex gap-3">
-                <Link href="/pricing" className="flex-1">
-                  <Button size="lg" className="w-full glow-blue-sm">
-                    Upgrade to unlock this type
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-                <Button size="lg" variant="secondary" onClick={() => switchType(FREE_TYPES[0])}>
-                  Use a free type instead
-                </Button>
-              </div>
-            )}
           </div>
 
           {/* ══════════════════════════════════════
