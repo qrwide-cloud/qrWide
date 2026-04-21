@@ -197,19 +197,24 @@ a:focus-visible {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ── QRMark scan-line animation ── */
+/* ── QRMark scan beam — sweeps left→right (wide scanner metaphor) ── */
 @keyframes qrScan {
-  0%   { transform: translateY(-100%); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateY(200%); opacity: 0; }
+  0%   { transform: translateX(-120%); opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateX(220%); opacity: 0; }
 }
 .qrmark-scan {
   position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 35%;
-  background: linear-gradient(to bottom, transparent 0%, rgba(0,200,150,0.35) 50%, transparent 100%);
-  animation: qrScan 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  inset-block: 0;
+  left: 0;
+  width: 38%;
+  background: linear-gradient(to right,
+    transparent 0%,
+    rgba(255,255,255,0.22) 40%,
+    rgba(0,200,150,0.3) 60%,
+    transparent 100%
+  );
+  animation: qrScan 4s cubic-bezier(0.37, 0, 0.63, 1) infinite;
   pointer-events: none;
 }
