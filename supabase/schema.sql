@@ -41,7 +41,12 @@ CREATE TABLE qr_codes (
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
   shortcode TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('url', 'menu', 'vcard', 'wifi', 'pdf', 'instagram', 'text')),
+  type TEXT NOT NULL CHECK (type IN (
+    'url', 'text', 'wifi', 'vcard',
+    'email', 'call', 'sms', 'whatsapp',
+    'facebook', 'instagram', 'linkedin', 'tiktok', 'youtube', 'event',
+    'pdf', 'app', 'images', 'video'
+  )),
   destination TEXT NOT NULL,
   is_dynamic BOOLEAN DEFAULT true,
   is_active BOOLEAN DEFAULT true,
@@ -60,6 +65,14 @@ CREATE INDEX idx_qr_codes_shortcode ON qr_codes(shortcode);
 
 -- ========================
 -- SCAN EVENTS
+-- ========================
+-- Migration note: if upgrading an existing DB, run:
+-- ALTER TABLE qr_codes DROP CONSTRAINT qr_codes_type_check;
+-- ALTER TABLE qr_codes ADD CONSTRAINT qr_codes_type_check CHECK (type IN (
+--   'url','text','wifi','vcard','email','call','sms','whatsapp',
+--   'facebook','instagram','linkedin','tiktok','youtube','event',
+--   'pdf','app','images','video'
+-- ));
 -- ========================
 CREATE TABLE scan_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

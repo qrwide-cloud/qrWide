@@ -1,86 +1,163 @@
 @import "tailwindcss";
 
+/* Class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --color-primary: #0066FF;
-  --color-primary-dark: #0052CC;
-  --color-accent: #00D4AA;
-  --color-surface-light: #F8F9FA;
-  --color-surface-dark: #141414;
-  --color-border-light: #E5E7EB;
-  --color-border-dark: #2A2A2A;
-  --color-success: #10B981;
-  --color-error: #EF4444;
-  --color-warning: #F59E0B;
+  --font-family-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-mono: var(--font-mono), ui-monospace, 'Cascadia Code', monospace;
 
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.2);
+  --color-primary:       #0057FF;
+  --color-primary-dark:  #003FCC;
+  --color-primary-light: #EBF2FF;
+  --color-accent:        #00C896;
+  --color-success:       #10B981;
+  --color-error:         #EF4444;
+  --color-warning:       #F59E0B;
 }
 
+/* ── Light mode tokens ── */
 :root {
-  --bg: #FFFFFF;
-  --surface: #F8F9FA;
-  --border: #E5E7EB;
-  --text-primary: #0A0A0A;
-  --text-secondary: #6B7280;
+  --bg:           #ffffff;
+  --surface:      #f8fafc;
+  --surface-2:    #f1f5f9;
+  --border:       #e9ecf0;
+  --border-strong: #d0d7de;
+  --text-primary:   #0d1117;
+  --text-secondary: #57606a;
+  --text-tertiary:  #8c959f;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-lg: 0 12px 24px rgba(0,0,0,0.09), 0 4px 8px rgba(0,0,0,0.05);
+  --shadow-xl: 0 24px 48px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.05);
 }
 
+/* ── Dark mode tokens ── */
 .dark {
-  --bg: #0A0A0A;
-  --surface: #141414;
-  --border: #2A2A2A;
-  --text-primary: #F5F5F5;
-  --text-secondary: #9CA3AF;
+  --bg:           #08090c;
+  --surface:      #0f1117;
+  --surface-2:    #171a22;
+  --border:       rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.13);
+  --text-primary:   #f0f3f8;
+  --text-secondary: #8b949e;
+  --text-tertiary:  #6e7681;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.5);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
+  --shadow-xl: 0 24px 64px rgba(0,0,0,0.7);
 }
 
-* {
+/* ── Reset ── */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+  border-color: var(--border);
 }
 
 html {
-  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
 }
 
 body {
   background-color: var(--bg);
   color: var(--text-primary);
-  transition: background-color 150ms ease, color 150ms ease;
+  font-family: var(--font-family-sans);
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0;
 }
 
+/* ── Brand gradient text ── */
+.text-gradient {
+  background: linear-gradient(135deg, #0057FF 0%, #00C896 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* For dark backgrounds (lighter gradient) */
+.text-gradient-light {
+  background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Section label (eyebrow text) ── */
+.label-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0057FF;
+}
+
+/* ── Dot grid background ── */
+.bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(148,163,184,0.18) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Subtle border gradient ring ── */
+.ring-gradient {
+  border: 1px solid transparent;
+  background: linear-gradient(var(--surface), var(--surface)) padding-box,
+              linear-gradient(135deg, rgba(0,87,255,0.3), rgba(0,200,150,0.2)) border-box;
+}
+
+/* ── Glow utilities ── */
+.glow-blue-sm {
+  box-shadow: 0 4px 20px rgba(0,87,255,0.38), 0 1px 4px rgba(0,87,255,0.2);
+}
+.glow-blue-sm:hover {
+  box-shadow: 0 6px 28px rgba(0,87,255,0.48), 0 2px 6px rgba(0,87,255,0.25);
+}
+
+/* ── Glass surface ── */
+.glass {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.09);
+}
+
+/* ── Feature card ── */
+.feature-card {
+  transition: transform 180ms cubic-bezier(0.2, 0, 0, 1),
+              box-shadow 180ms cubic-bezier(0.2, 0, 0, 1),
+              border-color 180ms ease;
+}
+.feature-card:hover {
+  transform: translateY(-3px);
+}
+
+/* ── Animations ── */
 @keyframes fadeScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-
 .animate-qr-appear {
-  animation: fadeScaleIn 150ms ease forwards;
+  animation: fadeScaleIn 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slideInBottom {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-toast {
+  animation: slideInBottom 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-toast {
-  animation: slideInBottom 200ms ease forwards;
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }

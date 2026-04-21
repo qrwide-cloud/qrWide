@@ -1,22 +1,17 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { QRPreview } from '@/components/qr/QRPreview'
 import { QRDownload } from '@/components/qr/QRDownload'
 import { useToast } from '@/components/ui/Toast'
 import { buildQRContent } from '@/lib/qr/generate'
+import { QR_TYPES, FREE_TYPES, PLAN_LABELS, PLAN_COLORS, type QRTypeConfig } from '@/lib/qr/types'
 import type { QRType, QRStyle } from '@/lib/db/schema'
-
-const TABS: { type: QRType; label: string; emoji: string }[] = [
-  { type: 'url', label: 'URL', emoji: '🔗' },
-  { type: 'wifi', label: 'WiFi', emoji: '📶' },
-  { type: 'vcard', label: 'vCard', emoji: '👤' },
-  { type: 'text', label: 'Text', emoji: '📝' },
-  { type: 'instagram', label: 'Instagram', emoji: '📸' },
-]
+import { Lock, ArrowRight, Sparkles } from 'lucide-react'
 
 const DOT_STYLES = [
   { value: 'square', label: 'Square' },
@@ -24,15 +19,21 @@ const DOT_STYLES = [
   { value: 'dots', label: 'Dots' },
   { value: 'classy', label: 'Classy' },
 ]
-
 const CORNER_STYLES = [
   { value: 'square', label: 'Square' },
   { value: 'rounded', label: 'Rounded' },
   { value: 'extra-rounded', label: 'Extra Round' },
 ]
 
-export function CreateClient() {
-  const [type, setType] = useState<QRType>('url')
+interface CreateClientProps {
+  userPlan?: 'free' | 'pro' | 'business'
+}
+
+export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
+  const searchParams = useSearchParams()
+  const initialType = searchParams.get('type') ?? 'url'
+
+  const [type, setType] = useState<QRType>(initialType as QRType)
   const [data, setData] = useState<Record<string, string>>({})
   const [style, setStyle] = useState<QRStyle>({
     foreground: '#000000',
@@ -54,8 +55,8 @@ export function CreateClient() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
+        if (!searchParams.get('type') && parsed.type) setType(parsed.type)
         if (parsed.data) setData(parsed.data)
-        if (parsed.type) setType(parsed.type)
         if (parsed.style) setStyle(parsed.style)
         if (parsed.name) setName(parsed.name)
       } catch {}
@@ -66,9 +67,7 @@ export function CreateClient() {
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => setDebouncedContent(content), 300)
-
-    // Autosave
+    timerRef.current = setTimeout(() => setDebouncedContent(content), 280)
     localStorage.setItem('create_qr_data', JSON.stringify({ type, data, style, name }))
   }, [content, type, data, style, name])
 
@@ -76,7 +75,26 @@ export function CreateClient() {
     setData((prev) => ({ ...prev, [key]: value }))
   }
 
+  function switchType(t: QRTypeConfig) {
+    setType(t.id as QRType)
+    setData({})
+  }
+
+  function canUse(plan: 'free' | 'pro' | 'business'): boolean {
+    if (plan === 'free') return true
+    if (plan === 'pro') return userPlan === 'pro' || userPlan === 'business'
+    if (plan === 'business') return userPlan === 'business'
+    return false
+  }
+
+  const activeConfig = QR_TYPES.find((t) => t.id === type)
+  const isLocked = activeConfig ? !canUse(activeConfig.plan) : false
+
   async function handleSave() {
+    if (isLocked) {
+      router.push('/pricing')
+      return
+    }
     if (!debouncedContent) {
       toast('Enter some content first', 'error')
       return
@@ -94,18 +112,8 @@ export function CreateClient() {
           isDynamic: true,
         }),
       })
-
-      if (res.status === 401) {
-        router.push('/login?redirectTo=/create')
-        return
-      }
-
-      if (!res.ok) {
-        const body = await res.json()
-        toast(body.error ?? 'Failed to save', 'error')
-        return
-      }
-
+      if (res.status === 401) { router.push('/login?redirectTo=/create'); return }
+      if (!res.ok) { const b = await res.json(); toast(b.error ?? 'Failed to save', 'error'); return }
       const { id } = await res.json()
       localStorage.removeItem('create_qr_data')
       toast('QR code saved!')
@@ -115,230 +123,386 @@ export function CreateClient() {
     }
   }
 
+  // Group types by plan
+  const freeTypes     = QR_TYPES.filter((t) => t.plan === 'free')
+  const proTypes      = QR_TYPES.filter((t) => t.plan === 'pro')
+  const businessTypes = QR_TYPES.filter((t) => t.plan === 'business')
+
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Create QR Code</h1>
+    <div className="min-h-screen bg-[var(--bg)]">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
 
-      <div className="flex flex-col-reverse gap-8 lg:flex-row lg:gap-12 max-w-5xl">
-        {/* === LEFT: Input === */}
-        <div className="flex-1 space-y-6">
-          {/* Type tabs */}
-          <div>
-            <div className="flex flex-wrap gap-1 rounded-[10px] bg-[var(--surface)] p-1">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.type}
-                  onClick={() => { setType(tab.type); setData({}) }}
-                  className={[
-                    'flex items-center gap-1.5 rounded-[8px] px-3 py-2 text-sm font-medium transition-all',
-                    type === tab.type
-                      ? 'bg-white dark:bg-[#141414] text-[var(--text-primary)] shadow-sm'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
-                  ].join(' ')}
-                >
-                  <span>{tab.emoji}</span>
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Fields */}
-          <div className="space-y-4">
-            <Input
-              label="QR Code Name"
-              placeholder="e.g. Restaurant Menu - Table 1"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-
-            {type === 'url' && (
-              <Input
-                label="URL"
-                type="url"
-                placeholder="https://your-website.com"
-                value={data.url ?? ''}
-                onChange={(e) => updateData('url', e.target.value)}
-              />
-            )}
-
-            {type === 'wifi' && (
-              <>
-                <Input
-                  label="Network Name (SSID)"
-                  placeholder="My WiFi Network"
-                  value={data.ssid ?? ''}
-                  onChange={(e) => updateData('ssid', e.target.value)}
-                />
-                <Input
-                  label="Password"
-                  type="password"
-                  placeholder="Network password"
-                  value={data.password ?? ''}
-                  onChange={(e) => updateData('password', e.target.value)}
-                />
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-medium text-[var(--text-primary)]">Encryption</label>
-                  <select
-                    value={data.encryption ?? 'WPA'}
-                    onChange={(e) => updateData('encryption', e.target.value)}
-                    className="h-10 rounded-[8px] border border-[var(--border)] bg-white dark:bg-[#141414] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]"
-                  >
-                    <option value="WPA">WPA/WPA2</option>
-                    <option value="WEP">WEP</option>
-                    <option value="nopass">None</option>
-                  </select>
-                </div>
-              </>
-            )}
-
-            {type === 'vcard' && (
-              <>
-                <Input label="Full Name" placeholder="Jane Smith" value={data.name ?? ''} onChange={(e) => updateData('name', e.target.value)} />
-                <Input label="Company" placeholder="Acme Inc" value={data.company ?? ''} onChange={(e) => updateData('company', e.target.value)} />
-                <Input label="Phone" type="tel" placeholder="+1 555 123 4567" value={data.phone ?? ''} onChange={(e) => updateData('phone', e.target.value)} />
-                <Input label="Email" type="email" placeholder="jane@example.com" value={data.email ?? ''} onChange={(e) => updateData('email', e.target.value)} />
-                <Input label="Website" type="url" placeholder="https://jane.com" value={data.website ?? ''} onChange={(e) => updateData('website', e.target.value)} />
-              </>
-            )}
-
-            {type === 'text' && (
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[var(--text-primary)]">Text</label>
-                <textarea
-                  rows={4}
-                  placeholder="Any text you want to encode"
-                  value={data.text ?? ''}
-                  onChange={(e) => updateData('text', e.target.value)}
-                  className="rounded-[8px] border border-[var(--border)] bg-white dark:bg-[#141414] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF] resize-y"
-                />
-              </div>
-            )}
-
-            {type === 'instagram' && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-[var(--text-secondary)] font-medium">instagram.com/</span>
-                <Input
-                  placeholder="yourhandle"
-                  value={data.handle ?? ''}
-                  onChange={(e) => updateData('handle', e.target.value.replace('@', ''))}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Save button */}
-          <div className="pt-2">
-            <Button onClick={handleSave} loading={saving} className="w-full sm:w-auto" size="lg">
-              Save & Track Scans
-            </Button>
-            <p className="text-xs text-[var(--text-secondary)] mt-2">
-              Saving creates a dynamic QR code you can update anytime
-            </p>
-          </div>
+        {/* Page header */}
+        <div className="mb-8">
+          <h1 className="text-[26px] font-bold tracking-[-0.025em] text-[var(--text-primary)]">Create QR Code</h1>
+          <p className="mt-1 text-[14px] text-[var(--text-secondary)]">
+            Choose a type, fill in the details, and download or save with tracking.
+          </p>
         </div>
 
-        {/* === RIGHT: Preview + Style === */}
-        <div className="lg:w-80 space-y-6">
-          {/* QR Preview */}
-          <div className="flex flex-col items-center">
-            <QRPreview content={debouncedContent} style={style} size={240} />
-            <div className="mt-4 w-full">
-              <QRDownload content={debouncedContent} style={style} filename={name || 'qrcode'} showPdf />
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10">
+
+          {/* ══════════════════════════════════════
+              LEFT: Type selector + Form
+          ══════════════════════════════════════ */}
+          <div className="flex-1 space-y-6">
+
+            {/* ── Type selector ── */}
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
+
+              {/* Free types */}
+              <div className="p-4 border-b border-[var(--border)]">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-[#10B981] mb-3">Free — always</p>
+                <div className="flex flex-wrap gap-2">
+                  {freeTypes.map((t) => {
+                    const Icon = t.icon
+                    const isActive = type === t.id
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => switchType(t)}
+                        className={[
+                          'flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium transition-all border',
+                          isActive
+                            ? 'bg-[#0057FF] text-white border-[#0057FF] shadow-[0_2px_8px_rgba(0,87,255,0.3)]'
+                            : 'bg-[var(--bg)] text-[var(--text-secondary)] border-[var(--border)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)]',
+                        ].join(' ')}
+                      >
+                        <Icon className="h-3.5 w-3.5 shrink-0" />
+                        {t.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Pro types */}
+              <div className="p-4 border-b border-[var(--border)]">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-[#0057FF]">Pro — $5/mo</p>
+                  {!canUse('pro') && (
+                    <Link href="/pricing" className="text-[11px] font-semibold text-[#0057FF] hover:underline flex items-center gap-1">
+                      Upgrade <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {proTypes.map((t) => {
+                    const Icon = t.icon
+                    const isActive = type === t.id
+                    const unlocked = canUse('pro')
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => switchType(t)}
+                        className={[
+                          'flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium transition-all border relative',
+                          isActive && unlocked
+                            ? 'bg-[#0057FF] text-white border-[#0057FF] shadow-[0_2px_8px_rgba(0,87,255,0.3)]'
+                            : isActive && !unlocked
+                            ? 'bg-[#0057FF]/10 text-[#0057FF] border-[#0057FF]/30'
+                            : unlocked
+                            ? 'bg-[var(--bg)] text-[var(--text-secondary)] border-[var(--border)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)]'
+                            : 'bg-[var(--bg)] text-[var(--text-tertiary)] border-[var(--border)] hover:border-[#0057FF]/30 cursor-pointer',
+                        ].join(' ')}
+                      >
+                        <Icon className="h-3.5 w-3.5 shrink-0" />
+                        {t.label}
+                        {!unlocked && <Lock className="h-3 w-3 shrink-0 opacity-60" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Business types */}
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-[#8B5CF6]">Business — $9/mo</p>
+                  {!canUse('business') && (
+                    <Link href="/pricing" className="text-[11px] font-semibold text-[#8B5CF6] hover:underline flex items-center gap-1">
+                      Upgrade <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {businessTypes.map((t) => {
+                    const Icon = t.icon
+                    const isActive = type === t.id
+                    const unlocked = canUse('business')
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => switchType(t)}
+                        className={[
+                          'flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium transition-all border',
+                          isActive && unlocked
+                            ? 'bg-[#8B5CF6] text-white border-[#8B5CF6] shadow-[0_2px_8px_rgba(139,92,246,0.3)]'
+                            : isActive && !unlocked
+                            ? 'bg-[#8B5CF6]/10 text-[#8B5CF6] border-[#8B5CF6]/30'
+                            : unlocked
+                            ? 'bg-[var(--bg)] text-[var(--text-secondary)] border-[var(--border)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)]'
+                            : 'bg-[var(--bg)] text-[var(--text-tertiary)] border-[var(--border)] hover:border-[#8B5CF6]/30 cursor-pointer',
+                        ].join(' ')}
+                      >
+                        <Icon className="h-3.5 w-3.5 shrink-0" />
+                        {t.label}
+                        {!unlocked && <Lock className="h-3 w-3 shrink-0 opacity-60" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
-            <button
-              onClick={() => setTestModalOpen(true)}
-              disabled={!debouncedContent}
-              className="mt-3 text-sm text-[#0066FF] hover:underline disabled:opacity-50"
-            >
-              Test this QR code →
-            </button>
+
+            {/* ── Upsell banner for locked types ── */}
+            {isLocked && activeConfig && (
+              <div className="rounded-2xl border p-5 flex items-start gap-4"
+                style={{
+                  borderColor: PLAN_COLORS[activeConfig.plan].border,
+                  background: PLAN_COLORS[activeConfig.plan].bg,
+                }}>
+                <div className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center"
+                  style={{ background: PLAN_COLORS[activeConfig.plan].bg, border: `1px solid ${PLAN_COLORS[activeConfig.plan].border}` }}>
+                  <Sparkles className="h-5 w-5" style={{ color: PLAN_COLORS[activeConfig.plan].text }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[14px] font-semibold text-[var(--text-primary)]">
+                    {activeConfig.label} QR codes require {PLAN_LABELS[activeConfig.plan]}
+                  </p>
+                  <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+                    Upgrade to {PLAN_LABELS[activeConfig.plan]} to generate {activeConfig.label} QR codes
+                    and {activeConfig.plan === 'pro' ? '10 more' : '3 more'} types.
+                  </p>
+                  <Link href="/pricing" className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold hover:underline"
+                    style={{ color: PLAN_COLORS[activeConfig.plan].text }}>
+                    View {PLAN_LABELS[activeConfig.plan]} plan
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* ── Form fields ── */}
+            {!isLocked && activeConfig && (
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 space-y-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ background: activeConfig.iconBg }}>
+                    <activeConfig.icon className="h-4 w-4" style={{ color: activeConfig.iconColor }} />
+                  </div>
+                  <div>
+                    <h2 className="text-[14.5px] font-semibold text-[var(--text-primary)]">{activeConfig.label}</h2>
+                    <p className="text-[12.5px] text-[var(--text-secondary)]">{activeConfig.description}</p>
+                  </div>
+                </div>
+
+                <Input
+                  label="QR Code Name"
+                  placeholder={`e.g. ${activeConfig.label} — Main Campaign`}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+
+                {activeConfig.fields.map((field) => {
+                  if (field.type === 'textarea') {
+                    return (
+                      <div key={field.key} className="flex flex-col gap-1.5">
+                        <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
+                        <textarea
+                          rows={3}
+                          placeholder={field.placeholder}
+                          value={data[field.key] ?? ''}
+                          onChange={(e) => updateData(field.key, e.target.value)}
+                          className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3.5 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[#0057FF]/50 focus:ring-2 focus:ring-[#0057FF]/15 resize-y transition-all"
+                        />
+                      </div>
+                    )
+                  }
+
+                  if (field.type === 'select' && field.options) {
+                    return (
+                      <div key={field.key} className="flex flex-col gap-1.5">
+                        <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
+                        <select
+                          value={data[field.key] ?? field.options[0].value}
+                          onChange={(e) => updateData(field.key, e.target.value)}
+                          className="w-full h-10 rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3.5 text-[14px] text-[var(--text-primary)] outline-none focus:border-[#0057FF]/50 focus:ring-2 focus:ring-[#0057FF]/15 transition-all"
+                        >
+                          {field.options.map((o) => (
+                            <option key={o.value} value={o.value}>{o.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )
+                  }
+
+                  if (field.type === 'handle') {
+                    return (
+                      <div key={field.key} className="flex flex-col gap-1.5">
+                        <label className="text-[13px] font-medium text-[var(--text-primary)]">{field.label}</label>
+                        <div className="flex items-center gap-0 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg)] focus-within:border-[#0057FF]/50 focus-within:ring-2 focus-within:ring-[#0057FF]/15 transition-all">
+                          {field.prefix && (
+                            <span className="border-r border-[var(--border)] bg-[var(--surface)] px-3 text-[13px] text-[var(--text-tertiary)] whitespace-nowrap py-2.5">
+                              {field.prefix}
+                            </span>
+                          )}
+                          <input
+                            type="text"
+                            placeholder={field.placeholder}
+                            value={data[field.key] ?? ''}
+                            onChange={(e) => updateData(field.key, e.target.value.replace('@', ''))}
+                            className="flex-1 min-w-0 bg-transparent px-3 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none"
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <Input
+                      key={field.key}
+                      label={field.label}
+                      type={field.type as React.HTMLInputTypeAttribute}
+                      placeholder={field.placeholder}
+                      value={data[field.key] ?? ''}
+                      onChange={(e) => updateData(field.key, e.target.value)}
+                    />
+                  )
+                })}
+
+                {/* Save */}
+                <div className="pt-2 flex flex-wrap items-center gap-4">
+                  <Button onClick={handleSave} loading={saving} size="lg" className="glow-blue-sm">
+                    Save & Track Scans
+                  </Button>
+                  <p className="text-[12.5px] text-[var(--text-secondary)]">
+                    Creates a dynamic QR you can update anytime
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Locked CTA */}
+            {isLocked && (
+              <div className="flex gap-3">
+                <Link href="/pricing" className="flex-1">
+                  <Button size="lg" className="w-full glow-blue-sm">
+                    Upgrade to unlock this type
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button size="lg" variant="secondary" onClick={() => switchType(FREE_TYPES[0])}>
+                  Use a free type instead
+                </Button>
+              </div>
+            )}
           </div>
 
-          {/* Style controls */}
-          <div className="space-y-4 rounded-[12px] border border-[var(--border)] p-4 bg-white dark:bg-[#141414]">
-            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Style</h3>
+          {/* ══════════════════════════════════════
+              RIGHT: Preview + Style
+          ══════════════════════════════════════ */}
+          <div className="lg:w-72 xl:w-80 space-y-5 lg:sticky lg:top-[78px]">
 
-            <div className="flex gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs text-[var(--text-secondary)]">Foreground</label>
-                <input
-                  type="color"
-                  value={style.foreground ?? '#000000'}
-                  onChange={(e) => setStyle((s) => ({ ...s, foreground: e.target.value }))}
-                  className="h-9 w-16 rounded-[6px] border border-[var(--border)] cursor-pointer"
-                />
+            {/* QR Preview */}
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 flex flex-col items-center gap-4">
+              <div className={debouncedContent && !isLocked ? 'animate-qr-appear' : ''}>
+                <QRPreview content={!isLocked ? debouncedContent : ''} style={style} size={220} />
               </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs text-[var(--text-secondary)]">Background</label>
-                <input
-                  type="color"
-                  value={style.background ?? '#FFFFFF'}
-                  onChange={(e) => setStyle((s) => ({ ...s, background: e.target.value }))}
-                  className="h-9 w-16 rounded-[6px] border border-[var(--border)] cursor-pointer"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-[var(--text-secondary)]">Dot style</label>
-              <div className="flex flex-wrap gap-1">
-                {DOT_STYLES.map((ds) => (
+              {!isLocked && debouncedContent && (
+                <>
+                  <div className="w-full">
+                    <QRDownload content={debouncedContent} style={style} filename={name || 'qrcode'} showPdf />
+                  </div>
                   <button
-                    key={ds.value}
-                    onClick={() => setStyle((s) => ({ ...s, dotStyle: ds.value as QRStyle['dotStyle'] }))}
-                    className={[
-                      'px-2.5 py-1 text-xs rounded-[6px] border transition-all',
-                      style.dotStyle === ds.value
-                        ? 'border-[#0066FF] bg-[#0066FF]/10 text-[#0066FF]'
-                        : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[#0066FF]',
-                    ].join(' ')}
+                    onClick={() => setTestModalOpen(true)}
+                    className="text-[13px] text-[#0057FF] hover:underline font-medium"
                   >
-                    {ds.label}
+                    Test this QR code →
                   </button>
-                ))}
-              </div>
+                </>
+              )}
+              {isLocked && (
+                <div className="text-center">
+                  <Lock className="h-8 w-8 text-[var(--text-tertiary)] mx-auto mb-2" />
+                  <p className="text-[12.5px] text-[var(--text-secondary)]">Unlock this type to preview and download</p>
+                </div>
+              )}
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-[var(--text-secondary)]">Corner style</label>
-              <div className="flex flex-wrap gap-1">
-                {CORNER_STYLES.map((cs) => (
-                  <button
-                    key={cs.value}
-                    onClick={() => setStyle((s) => ({ ...s, cornerStyle: cs.value as QRStyle['cornerStyle'] }))}
-                    className={[
-                      'px-2.5 py-1 text-xs rounded-[6px] border transition-all',
-                      style.cornerStyle === cs.value
-                        ? 'border-[#0066FF] bg-[#0066FF]/10 text-[#0066FF]'
-                        : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[#0066FF]',
-                    ].join(' ')}
-                  >
-                    {cs.label}
-                  </button>
-                ))}
+            {/* Style controls */}
+            {!isLocked && (
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 space-y-4">
+                <h3 className="text-[13.5px] font-semibold text-[var(--text-primary)]">Style</h3>
+
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11.5px] text-[var(--text-secondary)]">Foreground</label>
+                    <input type="color" value={style.foreground ?? '#000000'}
+                      onChange={(e) => setStyle((s) => ({ ...s, foreground: e.target.value }))}
+                      className="h-9 w-16 rounded-lg border border-[var(--border)] cursor-pointer" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11.5px] text-[var(--text-secondary)]">Background</label>
+                    <input type="color" value={style.background ?? '#FFFFFF'}
+                      onChange={(e) => setStyle((s) => ({ ...s, background: e.target.value }))}
+                      className="h-9 w-16 rounded-lg border border-[var(--border)] cursor-pointer" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11.5px] text-[var(--text-secondary)]">Dot style</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {DOT_STYLES.map((ds) => (
+                      <button key={ds.value}
+                        onClick={() => setStyle((s) => ({ ...s, dotStyle: ds.value as QRStyle['dotStyle'] }))}
+                        className={[
+                          'px-2.5 py-1 text-[12px] rounded-lg border transition-all',
+                          style.dotStyle === ds.value
+                            ? 'border-[#0057FF] bg-[#0057FF]/10 text-[#0057FF] font-medium'
+                            : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]',
+                        ].join(' ')}>
+                        {ds.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11.5px] text-[var(--text-secondary)]">Corner style</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {CORNER_STYLES.map((cs) => (
+                      <button key={cs.value}
+                        onClick={() => setStyle((s) => ({ ...s, cornerStyle: cs.value as QRStyle['cornerStyle'] }))}
+                        className={[
+                          'px-2.5 py-1 text-[12px] rounded-lg border transition-all',
+                          style.cornerStyle === cs.value
+                            ? 'border-[#0057FF] bg-[#0057FF]/10 text-[#0057FF] font-medium'
+                            : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]',
+                        ].join(' ')}>
+                        {cs.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Test modal */}
       {testModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-          onClick={() => setTestModalOpen(false)}
-        >
-          <div
-            className="bg-white dark:bg-[#141414] rounded-[16px] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.2)] flex flex-col items-center gap-4 max-w-sm w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-lg font-bold text-[var(--text-primary)]">Test Your QR Code</h3>
-            <QRPreview content={debouncedContent} style={style} size={280} />
-            <p className="text-sm text-[var(--text-secondary)] text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={() => setTestModalOpen(false)}>
+          <div className="bg-[var(--surface)] rounded-3xl p-8 shadow-[var(--shadow-xl)] flex flex-col items-center gap-5 max-w-sm w-full border border-[var(--border)]"
+            onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-[17px] font-bold text-[var(--text-primary)]">Test Your QR Code</h3>
+            <QRPreview content={debouncedContent} style={style} size={260} />
+            <p className="text-[13px] text-[var(--text-secondary)] text-center">
               Scan with your phone camera to test the destination
             </p>
-            <Button variant="secondary" onClick={() => setTestModalOpen(false)}>Close</Button>
+            <Button variant="secondary" onClick={() => setTestModalOpen(false)} size="md">Close</Button>
           </div>
         </div>
       )}

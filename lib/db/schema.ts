@@ -1,6 +1,14 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
-export type QRType = 'url' | 'menu' | 'vcard' | 'wifi' | 'pdf' | 'instagram' | 'text'
+export type QRType =
+  // Free
+  | 'url' | 'text' | 'wifi' | 'vcard'
+  // Pro
+  | 'email' | 'call' | 'sms' | 'whatsapp'
+  | 'facebook' | 'instagram' | 'linkedin' | 'tiktok' | 'youtube'
+  | 'event'
+  // Business
+  | 'pdf' | 'app' | 'images' | 'video'
 
 export interface QRStyle {
   foreground?: string
