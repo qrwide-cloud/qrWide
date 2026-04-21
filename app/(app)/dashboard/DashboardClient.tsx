@@ -49,6 +49,10 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
       : process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'
 
   useEffect(() => {
+    setQRCodes(initialQRCodes)
+  }, [initialQRCodes])
+
+  useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA') return
@@ -64,6 +68,34 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
+  }, [router])
+
+  useEffect(() => {
+    let refreshTimeout: ReturnType<typeof setTimeout> | null = null
+
+    function queueRefresh() {
+      if (refreshTimeout) return
+
+      refreshTimeout = setTimeout(() => {
+        router.refresh()
+        refreshTimeout = null
+      }, 150)
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        queueRefresh()
+      }
+    }
+
+    window.addEventListener('focus', queueRefresh)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('focus', queueRefresh)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      if (refreshTimeout) clearTimeout(refreshTimeout)
+    }
   }, [router])
 
   const filtered = qrCodes

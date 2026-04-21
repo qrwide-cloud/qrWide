@@ -4,6 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import { AnalyticsClient } from './AnalyticsClient'
 
 export const metadata: Metadata = { title: 'Analytics' }
+export const dynamic = 'force-dynamic'
 
 export default async function AnalyticsPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
