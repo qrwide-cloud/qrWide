@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useToast } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -24,24 +24,44 @@ type Range = typeof RANGES[number]
 export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps) {
   const [range, setRange] = useState<Range>('30d')
   const [scans, setScans] = useState<ScanEvent[]>(initialScans)
+  const [summary, setSummary] = useState({
+    totalScans: qr.total_scans,
+    uniqueScans: qr.unique_scans,
+    lastScannedAt: qr.last_scanned_at,
+  })
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'
 
-  async function fetchScans(r: Range) {
-    if (r === range) return
-    setRange(r)
+  async function fetchScans(r: Range, options?: { silent?: boolean }) {
+    if (r !== range) {
+      setRange(r)
+    }
     setLoading(true)
     try {
       const res = await fetch(`/api/analytics/${qr.id}?range=${r}`)
       if (res.ok) {
         const data = await res.json()
         setScans(data.scans)
+        if (data.summary) {
+          setSummary(data.summary)
+        }
+        if (!options?.silent) {
+          toast('Analytics refreshed')
+        }
       }
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      void fetchScans(range, { silent: true })
+    }, 15000)
+
+    return () => window.clearInterval(interval)
+  }, [range])
 
   async function copyShortlink() {
     await navigator.clipboard.writeText(`${appUrl}/s/${qr.shortcode}`)
@@ -65,7 +85,6 @@ export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps
   }
 
   // Aggregate stats
-  const uniqueIps = new Set(scans.map((s) => s.ip_hash).filter(Boolean)).size
   const oldestScan = scans[scans.length - 1]?.scanned_at
   const days = range === 'all'
     ? Math.max(
@@ -74,7 +93,7 @@ export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps
       )
     : parseInt(range)
   const dailyAvg = scans.length > 0 ? (scans.length / days).toFixed(1) : '0'
-  const lastScanned = scans[0]?.scanned_at ? new Date(scans[0].scanned_at).toLocaleDateString() : 'Never'
+  const lastScanned = summary.lastScannedAt ? new Date(summary.lastScannedAt).toLocaleDateString() : 'Never'
 
   // Country aggregation
   const countryMap: Record<string, number> = {}
@@ -112,6 +131,9 @@ export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps
           </div>
         </div>
         <div className="flex gap-2">
+          <Button variant="secondary" size="sm" onClick={() => fetchScans(range)}>
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </Button>
           <a href={`/share/${qr.shortcode}`}>
             <Button variant="secondary" size="sm">
               Share page
@@ -128,8 +150,8 @@ export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4 mb-8">
         {[
-          { label: 'Total scans', value: qr.total_scans.toLocaleString() },
-          { label: 'Unique scans', value: uniqueIps.toLocaleString() },
+          { label: 'Total scans', value: summary.totalScans.toLocaleString() },
+          { label: 'Unique scans', value: summary.uniqueScans.toLocaleString() },
           { label: 'Daily average', value: dailyAvg },
           { label: 'Last scanned', value: lastScanned },
         ].map((s) => (

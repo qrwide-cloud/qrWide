@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   const { data: qr } = await supabase
     .from('qr_codes')
-    .select('id')
+    .select('id, total_scans, unique_scans, last_scanned_at')
     .eq('id', params.id)
     .eq('user_id', user.id)
     .single()
@@ -31,5 +31,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 
   const { data: scans } = await query
-  return NextResponse.json({ scans: scans ?? [] })
+  return NextResponse.json({
+    scans: scans ?? [],
+    summary: {
+      totalScans: qr.total_scans,
+      uniqueScans: qr.unique_scans,
+      lastScannedAt: qr.last_scanned_at,
+    },
+  })
 }
