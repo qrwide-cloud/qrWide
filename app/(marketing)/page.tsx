@@ -6,8 +6,35 @@ import { FREE_TYPES, PRO_TYPES, BUSINESS_TYPES } from '@/lib/qr/types'
 import {
   CheckCircle2, ArrowRight, Lock,
   RefreshCw, BarChart3, Shield, Gauge, Zap, Globe,
-  Star, Utensils, Home, Calendar, ScanLine, Download, Settings2,
+  Star, Utensils, Home, Calendar, ScanLine, Download, Settings2, ChevronRight,
 } from 'lucide-react'
+
+const HOME_FAQ = [
+  {
+    question: 'Is QRWide really free?',
+    answer: 'Yes. The Free plan is free forever — no time limit, no credit card required. Free static QR codes never expire. You also get 3 dynamic QR codes (updateable after printing) on the Free plan at no cost.',
+  },
+  {
+    question: 'What is the difference between a static and dynamic QR code?',
+    answer: 'Static QR codes encode the destination directly in the pattern — they cannot be changed after printing. Dynamic QR codes redirect through QRWide\'s servers, so you can update the destination URL at any time without reprinting. Dynamic codes also unlock real-time scan analytics.',
+  },
+  {
+    question: 'Can I use QR codes for my business without paying?',
+    answer: 'Yes. The Free plan includes 3 dynamic QR codes, 4 QR types (URL, Text, Wi-Fi, vCard), PNG and SVG downloads, and basic scan counts — enough for most small business needs. Upgrade to Pro ($5/mo) for 50 dynamic codes, full analytics, and 10 additional QR types.',
+  },
+  {
+    question: 'How long does it take to create a QR code?',
+    answer: 'Under 30 seconds. Enter your URL or content, choose a type, and download instantly. No account required for basic generation. Sign up free to save your codes and track scans.',
+  },
+  {
+    question: 'Do QRWide QR codes work with any smartphone?',
+    answer: 'Yes. QRWide generates standard QR codes compatible with the native camera app on all modern iOS and Android devices — no special app required.',
+  },
+  {
+    question: 'Can I update a QR code after it has been printed?',
+    answer: 'Yes, if it is a dynamic QR code. The printed QR pattern never changes, but the destination URL it points to can be updated anytime from your dashboard. This means you can fix broken links or redirect to a new page without reprinting anything.',
+  },
+]
 
 export const metadata: Metadata = {
   title: 'Free QR Code Generator with Analytics | QRWide',
@@ -125,18 +152,56 @@ const SOCIAL_PROOF = [
 export default function HomePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org', '@type': 'WebApplication',
-            name: 'QRWide', url: 'https://qrwide.com',
-            description: 'Free QR code generator with analytics. Dynamic QR codes that never expire.',
-            applicationCategory: 'BusinessApplication',
-            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-          }),
-        }}
-      />
+      {/* WebSite — enables sitelinks searchbox in Google */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'QRWide',
+        url: 'https://qrwide.com',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: { '@type': 'EntryPoint', urlTemplate: 'https://qrwide.com/qr-code-generator?q={search_term_string}' },
+          'query-input': 'required name=search_term_string',
+        },
+      })}} />
+
+      {/* SoftwareApplication — rich result with pricing */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'QRWide',
+        url: 'https://qrwide.com',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        description: 'Free QR code generator with real-time analytics. Create, track, and update dynamic QR codes. 15+ QR types including Wi-Fi, vCard, WhatsApp, PDF, and more.',
+        offers: [
+          { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD' },
+          { '@type': 'Offer', name: 'Pro', price: '5', priceCurrency: 'USD', billingIncrement: 'P1M' },
+          { '@type': 'Offer', name: 'Business', price: '9', priceCurrency: 'USD', billingIncrement: 'P1M' },
+        ],
+      })}} />
+
+      {/* Organization — establishes brand entity */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'QRWide',
+        url: 'https://qrwide.com',
+        logo: 'https://qrwide.com/logo.png',
+        sameAs: ['https://twitter.com/qrwide'],
+        contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', url: 'https://qrwide.com' },
+      })}} />
+
+      {/* FAQPage — expandable FAQ in search results */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: HOME_FAQ.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: { '@type': 'Answer', text: item.answer },
+        })),
+      })}} />
 
       {/* ══════════════════════════════════════════════════════
           HERO
@@ -650,6 +715,32 @@ export default function HomePage() {
           <p className="text-center text-[13px] text-[var(--text-tertiary)]">
             All plans include unlimited static QR codes · No credit card for free plan
           </p>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          FAQ
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-3xl px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <p className="label-eyebrow mb-3">Common questions</p>
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[34px]">
+              Frequently asked questions
+            </h2>
+          </div>
+          <div className="space-y-2">
+            {HOME_FAQ.map((item) => (
+              <details key={item.question}
+                className="group rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[14.5px] font-semibold text-[var(--text-primary)]">
+                  {item.question}
+                  <ChevronRight className="h-4 w-4 shrink-0 text-[var(--text-tertiary)] transition-transform duration-200 group-open:rotate-90" />
+                </summary>
+                <p className="mt-3 text-[14px] leading-[1.75] text-[var(--text-secondary)]">{item.answer}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
