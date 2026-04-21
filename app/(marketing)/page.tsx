@@ -18,38 +18,80 @@ export const metadata: Metadata = {
 }
 
 const FEATURES = [
-  { icon: RefreshCw, color: '#0057FF', bg: 'rgba(0,87,255,0.09)', title: 'Dynamic QR Codes', desc: 'Change the destination URL anytime. No reprinting. Ever.' },
-  { icon: BarChart3, color: '#00C896', bg: 'rgba(0,200,150,0.09)', title: 'Real-time Analytics', desc: 'Every scan tracked — city, device, time. Know what works.' },
-  { icon: Shield,    color: '#10B981', bg: 'rgba(16,185,129,0.09)', title: 'Never Expires',     desc: 'Free codes stay free. No bait-and-switch after 30 days.' },
-  { icon: Gauge,     color: '#EF4444', bg: 'rgba(239,68,68,0.09)',   title: 'Sub-200ms Redirect', desc: 'Edge-cached globally. Scans feel instant anywhere.' },
-  { icon: Zap,       color: '#F59E0B', bg: 'rgba(245,158,11,0.09)',  title: 'Bulk Generation',  desc: 'Upload a CSV, get 500 QR codes in a ZIP in 60 seconds.' },
-  { icon: Globe,     color: '#8B5CF6', bg: 'rgba(139,92,246,0.09)', title: '190+ Countries',   desc: 'Works wherever your audience is, without configuration.' },
+  {
+    icon: RefreshCw, color: '#0057FF', bg: 'rgba(0,87,255,0.1)',
+    title: 'Dynamic QR Codes',
+    desc: 'Change the destination URL any time — without touching the printed QR. Perfect for menus, campaigns, and signage.',
+  },
+  {
+    icon: BarChart3, color: '#00C896', bg: 'rgba(0,200,150,0.1)',
+    title: 'Real-time Scan Analytics',
+    desc: 'See every scan: location, device type, time of day. Know exactly which placements drive traffic.',
+  },
+  {
+    icon: Shield, color: '#10B981', bg: 'rgba(16,185,129,0.1)',
+    title: 'Free Codes Never Expire',
+    desc: 'We don\'t pull the rug. Free static codes stay active forever — no 30-day expiry tricks.',
+  },
+  {
+    icon: Gauge, color: '#EF4444', bg: 'rgba(239,68,68,0.1)',
+    title: 'Sub-200ms Redirects',
+    desc: 'Edge-cached globally. Scans resolve in under 200ms regardless of where your audience is.',
+  },
+  {
+    icon: Zap, color: '#F59E0B', bg: 'rgba(245,158,11,0.1)',
+    title: 'Bulk Generation',
+    desc: 'Upload a CSV, download a ZIP of 500 print-ready QR codes in under 60 seconds.',
+  },
+  {
+    icon: Globe, color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)',
+    title: '15+ QR Types',
+    desc: 'URL, Wi-Fi, vCard, WhatsApp, PDF, Instagram, Events and more — all from one platform.',
+  },
 ]
 
 const HOW_IT_WORKS = [
-  { step: '01', icon: Settings2, title: 'Choose your type', desc: 'Pick from 15+ QR types — URL, Wi-Fi, vCard, WhatsApp, PDF, and more.' },
-  { step: '02', icon: ScanLine,  title: 'Customize instantly', desc: 'Enter your content. The QR code previews in real-time as you type.' },
-  { step: '03', icon: Download,  title: 'Download & track', desc: 'Download as PNG or SVG. Sign up free to save and track every scan.' },
+  { step: '1', icon: Settings2, title: 'Choose a QR type', desc: 'Pick from 15+ types — URL, Wi-Fi, vCard, WhatsApp, PDF, and more.' },
+  { step: '2', icon: ScanLine,  title: 'Enter your content', desc: 'Type in your link or details. The QR code renders live as you type.' },
+  { step: '3', icon: Download,  title: 'Download & deploy', desc: 'Grab PNG or SVG instantly. Sign up free to save, edit, and track scans.' },
 ]
 
 const NICHES = [
   {
-    label: 'Restaurants & Cafes', headline: 'Update your menu. No reprinting.',
-    body: 'Print once, update forever. Swap the URL for daily specials or price changes — every scan lands on the latest version.',
-    cta: 'See restaurant features', href: '/use-cases/restaurants', Icon: Utensils, color: '#F59E0B',
-    stats: [{ value: '$0', label: 'reprinting costs' }, { value: '30s', label: 'to update' }, { value: '∞', label: 'free scans' }],
+    label: 'Restaurants & Cafes',
+    headline: 'Update your menu without reprinting.',
+    body: 'Print your QR code once. When prices change or specials rotate, update the destination URL in seconds. Every scan always lands on the latest version.',
+    cta: 'See restaurant features',
+    href: '/use-cases/restaurants',
+    Icon: Utensils,
+    color: '#F59E0B',
+    accentBg: 'rgba(245,158,11,0.06)',
+    bullets: ['One QR on every table', 'Update menu URL in seconds', 'No reprinting costs ever'],
+    stats: [{ value: '$0', label: 'reprint cost' }, { value: '30s', label: 'to update' }, { value: '∞', label: 'free scans' }],
   },
   {
-    label: 'Real Estate Agents', headline: 'Know which listings generate interest.',
-    body: 'A unique QR on every property. Real-time scan data shows which listings are hot and where buyers come from.',
-    cta: 'See real estate features', href: '/use-cases/real-estate', Icon: Home, color: '#0057FF',
-    stats: [{ value: '100%', label: 'scan attribution' }, { value: 'Live', label: 'interest data' }, { value: 'Any', label: 'listing platform' }],
+    label: 'Real Estate',
+    headline: 'Know which listings drive the most interest.',
+    body: 'Put a unique tracked QR on every flyer, yard sign, and listing sheet. See scan volume per property, location data, and peak interest times — all in your dashboard.',
+    cta: 'See real estate features',
+    href: '/use-cases/real-estate',
+    Icon: Home,
+    color: '#0057FF',
+    accentBg: 'rgba(0,87,255,0.06)',
+    bullets: ['One code per listing', 'Scan heatmaps by location', 'Compare listing interest side-by-side'],
+    stats: [{ value: '100%', label: 'attribution' }, { value: 'Live', label: 'scan data' }, { value: 'Any', label: 'listing platform' }],
   },
   {
-    label: 'Events & Conferences', headline: '500 personalized codes in 60 seconds.',
-    body: 'Upload a spreadsheet, download a ZIP of 500 branded QR codes ready to print. Booth cards, badges, handouts — done.',
-    cta: 'Try the bulk generator', href: '/use-cases/events', Icon: Calendar, color: '#8B5CF6',
-    stats: [{ value: '500', label: 'codes per upload' }, { value: '60s', label: 'generation time' }, { value: 'SVG+PNG', label: 'formats' }],
+    label: 'Events & Conferences',
+    headline: '500 personalized badge codes in 60 seconds.',
+    body: 'Upload your attendee spreadsheet. Download a ZIP of individually labeled, print-ready QR codes. Booth cards, badge inserts, handout sheets — done before your next meeting.',
+    cta: 'Try the bulk generator',
+    href: '/use-cases/events',
+    Icon: Calendar,
+    color: '#8B5CF6',
+    accentBg: 'rgba(139,92,246,0.06)',
+    bullets: ['CSV upload → ZIP download', 'SVG + PNG formats included', 'Scan analytics per attendee'],
+    stats: [{ value: '500', label: 'codes/upload' }, { value: '60s', label: 'generation' }, { value: 'SVG+PNG', label: 'formats' }],
   },
 ]
 
@@ -63,7 +105,7 @@ const SOCIAL_PROOF = [
     initial: 'M',
   },
   {
-    quote: 'Each listing gets its own tracked QR code. I can see which flyers actually drive traffic. It changed how I allocate print budget.',
+    quote: 'Each listing gets its own tracked QR. I can see which flyers actually drive traffic. It changed how I allocate my print budget entirely.',
     name: 'Sarah K.',
     role: 'Realtor, Pacific Realty Group',
     industry: 'Real Estate',
@@ -71,7 +113,7 @@ const SOCIAL_PROOF = [
     initial: 'S',
   },
   {
-    quote: 'We generated 340 badge QR codes via CSV for a two-day conference. The ZIP was ready in under a minute. Nothing else does that free.',
+    quote: 'We generated 340 badge QR codes via CSV for a two-day conference. The ZIP was ready in under a minute. Nothing else does that for free.',
     name: 'James W.',
     role: 'Events Director, TechConf',
     industry: 'Events',
@@ -96,101 +138,84 @@ export default function HomePage() {
         }}
       />
 
-      {/* ════════════════════════════════════════════════════
-          HERO — Two-column split
-      ════════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════════════════
+          HERO
+      ══════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden bg-[var(--bg)]">
-        {/* Background atmosphere */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-dot-grid opacity-70" />
-          <div className="absolute top-0 left-0 right-0 h-[600px]"
-            style={{ background: 'radial-gradient(ellipse 70% 50% at 30% -5%, rgba(0,87,255,0.09) 0%, transparent 70%)' }} />
-          <div className="absolute top-0 right-0 h-[700px] w-[700px]"
-            style={{ background: 'radial-gradient(circle at 80% 20%, rgba(0,200,150,0.06) 0%, transparent 60%)' }} />
-        </div>
+        <div className="absolute inset-0 -z-10 bg-dot-grid opacity-60" />
+        <div className="absolute -z-10 top-0 left-0 right-0 h-[500px]"
+          style={{ background: 'radial-gradient(ellipse 80% 60% at 20% -10%, rgba(0,87,255,0.08) 0%, transparent 70%)' }} />
+        <div className="absolute -z-10 top-0 right-0 h-[600px] w-[600px]"
+          style={{ background: 'radial-gradient(circle at 90% 10%, rgba(0,200,150,0.05) 0%, transparent 60%)' }} />
 
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-          {/*
-            Mobile: generator on top, copy below (flex-col-reverse)
-            Desktop: copy left, generator right (lg:flex-row)
-          */}
-          <div className="flex flex-col-reverse gap-8 py-8 sm:py-10 lg:flex-row lg:items-center lg:gap-16 lg:min-h-[calc(100vh-62px)] lg:py-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="flex flex-col-reverse gap-8 py-10 sm:py-12
+                          lg:flex-row lg:items-center lg:gap-12 lg:py-16 xl:py-20">
 
-            {/* ── LEFT: Marketing copy (45%) ── */}
-            <div className="flex-[0_0_auto] lg:w-[44%]">
-              {/* Eyebrow — hidden on mobile to save space */}
-              <div className="mb-5 hidden sm:inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-4 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#0057FF]" style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
-                <span className="text-[12.5px] font-semibold tracking-wide text-[#0057FF]">
+            {/* Copy — left */}
+            <div className="flex-1 lg:max-w-[520px]">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-3.5 py-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#0057FF]"
+                  style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
+                <span className="text-[12px] font-semibold tracking-wide text-[#0057FF]">
                   Free forever · No credit card required
                 </span>
               </div>
 
-              {/* Headline */}
-              <h1 className="text-[34px] font-extrabold leading-[1.07] tracking-[-0.04em] text-[var(--text-primary)] sm:text-[48px] lg:text-[54px] xl:text-[60px]">
+              <h1 className="text-[36px] font-extrabold leading-[1.06] tracking-[-0.04em] text-[var(--text-primary)]
+                             sm:text-[46px] lg:text-[52px] xl:text-[58px]">
                 QR codes that
-                <br />
-                work as hard
-                <br />
-                <span className="text-gradient">as you do</span>
+                <br />work as hard
+                <br /><span className="text-gradient">as you do</span>
               </h1>
 
-              {/* Sub — shorter on mobile */}
-              <p className="mt-4 text-[15px] leading-[1.7] text-[var(--text-secondary)] max-w-[420px] sm:text-[16px] sm:leading-[1.75]">
-                Create, track, and update QR codes in seconds.
-                Free forever for the basics — upgrade when you need more.
+              <p className="mt-5 text-[16px] leading-[1.7] text-[var(--text-secondary)] max-w-[440px]">
+                Create, track, and update QR codes in seconds. Real-time analytics,
+                custom branding, and 15+ QR types — free forever for the basics.
               </p>
 
-              {/* CTAs */}
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-wrap gap-3">
                 <Link href="/create">
-                  <Button size="lg" className="glow-blue-sm h-11 px-6 text-[15px]">
+                  <Button size="lg" className="glow-blue-sm h-12 px-7 text-[15px] font-semibold">
                     Generate QR Code Free
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
-                  <Button size="lg" variant="secondary" className="h-11 px-6 text-[15px]">
+                  <Button size="lg" variant="secondary" className="h-12 px-7 text-[15px]">
                     View pricing
                   </Button>
                 </Link>
               </div>
 
-              {/* Trust chips — 1 row on mobile, stacked on desktop */}
-              <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 lg:flex-col lg:gap-2">
-                {[
-                  'No credit card required',
-                  'Free QR codes never expire',
-                  'Dynamic links — update anytime',
-                ].map((label) => (
-                  <div key={label} className="flex items-center gap-2 text-[13px] text-[var(--text-secondary)]">
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#10B981]" />
-                    {label}
+              <div className="mt-6 flex flex-col gap-2">
+                {['No credit card required', 'Free QR codes never expire', 'Update dynamic links anytime'].map((t) => (
+                  <div key={t} className="flex items-center gap-2 text-[13.5px] text-[var(--text-secondary)]">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-[#10B981]" />
+                    {t}
                   </div>
                 ))}
               </div>
 
-              {/* Social proof stats — hidden on mobile, shown sm+ */}
-              <div className="mt-7 hidden sm:flex gap-8 border-t border-[var(--border)] pt-6">
+              <div className="mt-8 hidden sm:grid grid-cols-3 gap-6 border-t border-[var(--border)] pt-7">
                 {[
-                  { value: '10,000+', label: 'businesses' },
+                  { value: '10,000+', label: 'businesses using QRWide' },
                   { value: '5M+',     label: 'scans tracked' },
-                  { value: '15+',     label: 'QR types' },
+                  { value: '15+',     label: 'QR code types' },
                 ].map((s) => (
                   <div key={s.label}>
-                    <div className="text-[20px] font-bold tracking-tight text-[var(--text-primary)]">{s.value}</div>
-                    <div className="text-[12px] text-[var(--text-secondary)] mt-0.5">{s.label}</div>
+                    <div className="text-[22px] font-extrabold tracking-tight text-[var(--text-primary)]">{s.value}</div>
+                    <div className="mt-0.5 text-[12px] leading-snug text-[var(--text-secondary)]">{s.label}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* ── RIGHT: QR Generator (55%) ── */}
-            <div className="flex-1 lg:flex lg:justify-end">
-              <div className="relative w-full max-w-[520px] mx-auto lg:mx-0">
-                {/* Glow behind card */}
-                <div className="absolute -inset-4 -z-10 rounded-[32px] blur-3xl"
-                  style={{ background: 'radial-gradient(ellipse, rgba(0,87,255,0.12) 0%, transparent 70%)' }} />
+            {/* Generator — right */}
+            <div className="flex-1 flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-[500px]">
+                <div className="absolute -inset-6 -z-10 rounded-[40px] blur-3xl"
+                  style={{ background: 'radial-gradient(ellipse, rgba(0,87,255,0.1) 0%, transparent 70%)' }} />
                 <HeroQRGenerator />
               </div>
             </div>
@@ -199,17 +224,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           PROOF BAR
-      ════════════════════════════════════════════════════ */}
+      ══════════════════════════════════════════════════════ */}
       <div className="border-y border-[var(--border)] bg-[var(--surface)]">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 py-3.5">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 py-4">
             {[
-              { icon: Gauge,    label: 'Sub-200ms redirects' },
-              { icon: Shield,   label: 'Privacy-first tracking' },
+              { icon: Gauge,     label: 'Sub-200ms redirects' },
+              { icon: Shield,    label: 'Privacy-first tracking' },
               { icon: RefreshCw, label: 'Dynamic QR codes' },
-              { icon: Globe,    label: '190+ countries' },
+              { icon: Globe,     label: '190+ countries' },
               { icon: BarChart3, label: 'Real-time analytics' },
             ].map(({ icon: Icon, label }) => (
               <div key={label} className="flex items-center gap-2 text-[13px] font-medium text-[var(--text-secondary)]">
@@ -221,35 +246,42 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           HOW IT WORKS
-      ════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-24">
-        <div className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center mb-14">
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-12">
             <p className="label-eyebrow mb-3">Simple by design</p>
-            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[34px]">
-              QR code in 30 seconds, flat
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[36px]">
+              QR code ready in 30 seconds
             </h2>
+            <p className="mt-3 text-[15px] text-[var(--text-secondary)] max-w-lg mx-auto">
+              No design skills needed. No account required to download.
+            </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-3">
             {HOW_IT_WORKS.map((step, i) => {
               const Icon = step.icon
               return (
-                <div key={step.step} className="relative rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
-                  {/* Connector line on desktop */}
+                <div key={step.step} className="relative">
+                  {/* Arrow connector */}
                   {i < HOW_IT_WORKS.length - 1 && (
-                    <div className="absolute right-0 top-1/2 hidden h-px w-4 -translate-y-1/2 translate-x-full bg-[var(--border)] sm:block" />
-                  )}
-                  <div className="mb-4 flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0057FF]/08">
-                      <Icon className="h-5 w-5 text-[#0057FF]" />
+                    <div className="absolute right-0 top-8 hidden translate-x-full items-center justify-center sm:flex" style={{ width: 24 }}>
+                      <ArrowRight className="h-4 w-4 text-[var(--border-strong)]" />
                     </div>
-                    <span className="text-[11px] font-bold tracking-widest text-[var(--text-tertiary)]">{step.step}</span>
+                  )}
+                  <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-7 h-full">
+                    <div className="mb-5 flex items-center gap-4">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0057FF]/08">
+                        <Icon className="h-5 w-5 text-[#0057FF]" />
+                      </div>
+                      <span className="text-[13px] font-bold tracking-[0.1em] text-[var(--text-tertiary)]">STEP {step.step}</span>
+                    </div>
+                    <h3 className="text-[16px] font-bold text-[var(--text-primary)]">{step.title}</h3>
+                    <p className="mt-2.5 text-[14px] leading-relaxed text-[var(--text-secondary)]">{step.desc}</p>
                   </div>
-                  <h3 className="text-[15px] font-semibold text-[var(--text-primary)]">{step.title}</h3>
-                  <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--text-secondary)]">{step.desc}</p>
                 </div>
               )
             })}
@@ -257,7 +289,7 @@ export default function HomePage() {
 
           <div className="mt-10 text-center">
             <Link href="/create">
-              <Button size="lg" className="glow-blue-sm h-11 px-7">
+              <Button size="lg" className="glow-blue-sm h-11 px-8 font-semibold">
                 Try it now — free <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -265,35 +297,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════
           QR TYPE SHOWCASE
-      ════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28 bg-[var(--surface)]">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-
-          <div className="mx-auto max-w-2xl text-center">
+      ══════════════════════════════════════════════════════ */}
+      <section className="bg-[var(--surface)] py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-10">
             <p className="label-eyebrow mb-3">15+ QR Types</p>
-            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[36px]">
               Generate any type of QR code
             </h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-secondary)] max-w-lg mx-auto">
-              From simple links to calendar events and WhatsApp chats.
-              Free types work instantly — Pro and Business types unlock with a subscription.
+            <p className="mt-3 text-[15px] text-[var(--text-secondary)] max-w-lg mx-auto">
+              Free types work instantly. Pro and Business types unlock with a subscription.
             </p>
           </div>
 
           {/* Free types */}
-          <div className="mt-12">
+          <div>
             <div className="mb-4 flex items-center gap-3">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-[#10B981]">Free — always</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#10B981]">Free — always</span>
               <div className="h-px flex-1 bg-[var(--border)]" />
+              <span className="text-[12px] text-[var(--text-tertiary)]">No account needed</span>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {FREE_TYPES.map((t) => {
                 const Icon = t.icon
                 return (
                   <Link key={t.id} href={`/create?type=${t.id}`}
-                    className="group feature-card flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]">
+                    className="group feature-card flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4
+                               hover:border-[#0057FF]/30 hover:shadow-[var(--shadow-md)]">
                     <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center" style={{ background: t.iconBg }}>
                       <Icon className="h-[18px] w-[18px]" style={{ color: t.iconColor }} />
                     </div>
@@ -308,32 +340,32 @@ export default function HomePage() {
           </div>
 
           {/* Pro types */}
-          <div className="mt-8">
+          <div className="mt-7">
             <div className="mb-4 flex items-center gap-3">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-[#0057FF]">Pro — $5/mo</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#0057FF]">Pro — $5/mo</span>
               <div className="h-px flex-1 bg-[var(--border)]" />
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               {PRO_TYPES.map((t) => {
                 const Icon = t.icon
                 return (
                   <Link key={t.id} href="/pricing"
-                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4 hover:border-[#0057FF]/25 hover:shadow-[var(--shadow-md)] overflow-hidden">
-                    <div className="absolute inset-0 bg-[var(--bg)]/70 backdrop-blur-[1px] flex items-center justify-end pr-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="flex items-center gap-1.5 rounded-full bg-[#0057FF] px-3 py-1 text-[11px] font-semibold text-white shadow-sm">
-                        <Lock className="h-3 w-3" />
-                        Upgrade to Pro
-                      </div>
+                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4
+                               hover:border-[#0057FF]/25 hover:shadow-[var(--shadow-md)] overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg)]/80 backdrop-blur-[1px]
+                                    opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="flex items-center gap-1 rounded-full bg-[#0057FF] px-3 py-1 text-[11px] font-semibold text-white">
+                        <Lock className="h-3 w-3" /> Pro
+                      </span>
                     </div>
-                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center opacity-60" style={{ background: t.iconBg }}>
+                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center opacity-50" style={{ background: t.iconBg }}>
                       <Icon className="h-[18px] w-[18px]" style={{ color: t.iconColor }} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[13.5px] font-semibold text-[var(--text-secondary)] truncate">{t.label}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[13px] font-semibold text-[var(--text-secondary)] truncate">{t.label}</span>
                         <Lock className="h-3 w-3 shrink-0 text-[var(--text-tertiary)]" />
                       </div>
-                      <div className="text-[11.5px] text-[var(--text-tertiary)] mt-0.5 truncate">{t.description}</div>
                     </div>
                   </Link>
                 )
@@ -342,9 +374,9 @@ export default function HomePage() {
           </div>
 
           {/* Business types */}
-          <div className="mt-8">
+          <div className="mt-7">
             <div className="mb-4 flex items-center gap-3">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-[#8B5CF6]">Business — $9/mo</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#8B5CF6]">Business — $9/mo</span>
               <div className="h-px flex-1 bg-[var(--border)]" />
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -352,22 +384,22 @@ export default function HomePage() {
                 const Icon = t.icon
                 return (
                   <Link key={t.id} href="/pricing"
-                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4 hover:border-[#8B5CF6]/25 hover:shadow-[var(--shadow-md)] overflow-hidden">
-                    <div className="absolute inset-0 bg-[var(--bg)]/70 backdrop-blur-[1px] flex items-center justify-end pr-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="flex items-center gap-1.5 rounded-full bg-[#8B5CF6] px-3 py-1 text-[11px] font-semibold text-white shadow-sm">
-                        <Lock className="h-3 w-3" />
-                        Business plan
-                      </div>
+                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4
+                               hover:border-[#8B5CF6]/25 hover:shadow-[var(--shadow-md)] overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg)]/80 backdrop-blur-[1px]
+                                    opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="flex items-center gap-1 rounded-full bg-[#8B5CF6] px-3 py-1 text-[11px] font-semibold text-white">
+                        <Lock className="h-3 w-3" /> Business
+                      </span>
                     </div>
-                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center opacity-60" style={{ background: t.iconBg }}>
+                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center opacity-50" style={{ background: t.iconBg }}>
                       <Icon className="h-[18px] w-[18px]" style={{ color: t.iconColor }} />
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[13.5px] font-semibold text-[var(--text-secondary)] truncate">{t.label}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[13px] font-semibold text-[var(--text-secondary)] truncate">{t.label}</span>
                         <Lock className="h-3 w-3 shrink-0 text-[var(--text-tertiary)]" />
                       </div>
-                      <div className="text-[11.5px] text-[var(--text-tertiary)] mt-0.5 truncate">{t.description}</div>
                     </div>
                   </Link>
                 )
@@ -375,48 +407,47 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* CTA below grid */}
-          <div className="mt-10 flex flex-col items-center gap-4 text-center">
-            <p className="text-[14px] text-[var(--text-secondary)]">
-              Start free — upgrade when you need more types
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/create">
-                <Button size="md" className="glow-blue-sm">
-                  Create free QR code <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/pricing">
-                <Button size="md" variant="secondary">Compare all plans</Button>
-              </Link>
-            </div>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 pt-6 border-t border-[var(--border)]">
+            <Link href="/create">
+              <Button size="md" className="glow-blue-sm font-semibold">
+                Start free — no account needed <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/pricing">
+              <Button size="md" variant="secondary">See all plans & pricing</Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════
-          FEATURES
-      ════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28" id="features">
-        <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center mb-12">
+      {/* ══════════════════════════════════════════════════════
+          FEATURES — 2-col layout with substance
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-16 sm:py-20" id="features">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-12">
             <p className="label-eyebrow mb-3">Platform</p>
-            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
-              Everything you need.
-              <br className="hidden sm:block" /> Nothing you don&apos;t.
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[36px]">
+              Everything you need. Nothing you don't.
             </h2>
+            <p className="mt-3 text-[15px] text-[var(--text-secondary)] max-w-lg mx-auto">
+              Built for businesses that depend on QR codes — not for occasional hobbyist use.
+            </p>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => {
               const Icon = f.icon
               return (
                 <div key={f.title}
-                  className="feature-card rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-lg)]">
-                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: f.bg }}>
-                    <Icon style={{ color: f.color, width: 18, height: 18 }} />
+                  className="feature-card group rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6
+                             hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-lg)]">
+                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl"
+                    style={{ background: f.bg }}>
+                    <Icon style={{ color: f.color, width: 20, height: 20 }} />
                   </div>
-                  <h3 className="text-[15px] font-semibold tracking-tight text-[var(--text-primary)]">{f.title}</h3>
-                  <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--text-secondary)]">{f.desc}</p>
+                  <h3 className="text-[15.5px] font-bold tracking-tight text-[var(--text-primary)]">{f.title}</h3>
+                  <p className="mt-2.5 text-[14px] leading-[1.7] text-[var(--text-secondary)]">{f.desc}</p>
                 </div>
               )
             })}
@@ -424,55 +455,74 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════
-          NICHE SECTIONS
-      ════════════════════════════════════════════════════ */}
-      <section className="bg-[var(--surface)] py-20 sm:py-28" id="use-cases">
-        <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center mb-16">
+      {/* ══════════════════════════════════════════════════════
+          INDUSTRY USE CASES — Card-based, not abstract boxes
+      ══════════════════════════════════════════════════════ */}
+      <section className="bg-[var(--surface)] py-16 sm:py-20" id="use-cases">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-12">
             <p className="label-eyebrow mb-3">Use Cases</p>
-            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
-              Built for your industry
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[36px]">
+              Built for real-world QR workflows
             </h2>
+            <p className="mt-3 text-[15px] text-[var(--text-secondary)] max-w-lg mx-auto">
+              Not a generic generator. QRWide is designed for the industries that depend on QR codes every day.
+            </p>
           </div>
-          <div className="space-y-16 sm:space-y-24">
+
+          <div className="space-y-5">
             {NICHES.map((niche, i) => {
               const Icon = niche.Icon
               return (
                 <div key={niche.label}
-                  className={`flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-20 ${i % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
-                  <div className="flex-1">
-                    <div className="ring-gradient overflow-hidden rounded-3xl p-8 sm:p-10 min-h-[240px] flex flex-col items-center justify-center gap-6"
-                      style={{ background: `radial-gradient(ellipse at 50% 0%, ${niche.color}0d 0%, var(--bg) 65%)` }}>
-                      <div className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-[var(--shadow-md)]"
-                        style={{ background: `linear-gradient(135deg, ${niche.color} 0%, ${niche.color}bb 100%)` }}>
-                        <Icon className="h-7 w-7 text-white" strokeWidth={1.75} />
-                      </div>
-                      <div className="flex gap-6 sm:gap-8">
-                        {niche.stats.map((s) => (
-                          <div key={s.label} className="text-center">
-                            <div className="text-[20px] font-bold tracking-tight" style={{ color: niche.color }}>{s.value}</div>
-                            <div className="mt-1 text-[12px] text-[var(--text-secondary)]">{s.label}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-1 max-w-[440px]">
-                    <div className="mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+                  className={`rounded-2xl border border-[var(--border)] bg-[var(--bg)] overflow-hidden
+                              lg:grid lg:grid-cols-[1fr_380px] ${i % 2 === 1 ? 'lg:grid-cols-[380px_1fr]' : ''}`}>
+
+                  {/* Content side */}
+                  <div className={`p-8 lg:p-10 ${i % 2 === 1 ? 'lg:order-2' : ''}`}>
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[12px] font-semibold"
                       style={{ background: `${niche.color}14`, color: niche.color }}>
-                      <Icon className="h-3 w-3" />{niche.label}
+                      <Icon className="h-3.5 w-3.5" />
+                      {niche.label}
                     </div>
-                    <h3 className="text-[24px] font-bold tracking-[-0.025em] leading-[1.25] text-[var(--text-primary)] sm:text-[28px]">
+                    <h3 className="text-[22px] font-bold tracking-[-0.025em] leading-[1.25] text-[var(--text-primary)] lg:text-[26px]">
                       {niche.headline}
                     </h3>
-                    <p className="mt-4 text-[15px] leading-[1.75] text-[var(--text-secondary)]">{niche.body}</p>
+                    <p className="mt-3 text-[14.5px] leading-[1.75] text-[var(--text-secondary)] max-w-[460px]">
+                      {niche.body}
+                    </p>
+                    <ul className="mt-5 space-y-2">
+                      {niche.bullets.map((b) => (
+                        <li key={b} className="flex items-center gap-2.5 text-[13.5px] text-[var(--text-primary)]">
+                          <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: niche.color }} />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
                     <div className="mt-7">
                       <Link href={niche.href}>
-                        <Button size="md" variant="secondary">{niche.cta} <ArrowRight className="h-4 w-4" /></Button>
+                        <Button size="md" variant="secondary">
+                          {niche.cta} <ArrowRight className="h-4 w-4" />
+                        </Button>
                       </Link>
                     </div>
                   </div>
+
+                  {/* Stats side */}
+                  <div className={`flex flex-col justify-center gap-0 border-t border-[var(--border)] lg:border-t-0
+                                   ${i % 2 === 1 ? 'lg:order-1 lg:border-r border-[var(--border)]' : 'lg:border-l border-[var(--border)]'}`}
+                    style={{ background: niche.accentBg }}>
+                    {niche.stats.map((s, j) => (
+                      <div key={s.label}
+                        className={`flex items-center justify-between px-8 py-7 lg:flex-col lg:items-start lg:py-8
+                                    ${j < niche.stats.length - 1 ? 'border-b border-[var(--border)]' : ''}`}>
+                        <span className="text-[13px] text-[var(--text-secondary)] lg:mb-2">{s.label}</span>
+                        <span className="text-[28px] font-extrabold tracking-tight lg:text-[36px]"
+                          style={{ color: niche.color }}>{s.value}</span>
+                      </div>
+                    ))}
+                  </div>
+
                 </div>
               )
             })}
@@ -480,41 +530,41 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════
-          SOCIAL PROOF — Real testimonials
-      ════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28">
-        <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center mb-12">
-            <p className="label-eyebrow mb-3">Customers</p>
-            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
-              Trusted by teams that print QR codes for a living
+      {/* ══════════════════════════════════════════════════════
+          SOCIAL PROOF
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="label-eyebrow mb-3">Trusted by real businesses</p>
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[36px]">
+              From restaurants to conference halls
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {SOCIAL_PROOF.map((t) => (
               <div key={t.name}
-                className="feature-card flex flex-col gap-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]">
-                {/* Stars */}
-                <div className="flex gap-0.5">
+                className="feature-card flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-7
+                           hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]">
+                <div className="mb-4 flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="h-3.5 w-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                    <Star key={i} className="h-4 w-4 fill-[#F59E0B] text-[#F59E0B]" />
                   ))}
                 </div>
-                <p className="flex-1 text-[14px] leading-[1.75] text-[var(--text-primary)]">&ldquo;{t.quote}&rdquo;</p>
-                <div className="flex items-center gap-3 border-t border-[var(--border)] pt-5">
-                  <div className="h-9 w-9 shrink-0 rounded-full flex items-center justify-center text-[12px] font-bold text-white"
+                <p className="flex-1 text-[14.5px] leading-[1.75] text-[var(--text-primary)]">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div className="mt-6 flex items-center gap-3 border-t border-[var(--border)] pt-5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white"
                     style={{ background: t.color }}>{t.initial}</div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="text-[13.5px] font-semibold text-[var(--text-primary)]">{t.name}</div>
-                    <div className="text-[12px] text-[var(--text-secondary)]">{t.role}</div>
+                    <div className="text-[12px] text-[var(--text-secondary)] truncate">{t.role}</div>
                   </div>
-                  <div className="ml-auto">
-                    <span className="rounded-full px-2.5 py-1 text-[10.5px] font-semibold"
-                      style={{ background: `${t.color}14`, color: t.color }}>
-                      {t.industry}
-                    </span>
-                  </div>
+                  <span className="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                    style={{ background: `${t.color}14`, color: t.color }}>
+                    {t.industry}
+                  </span>
                 </div>
               </div>
             ))}
@@ -522,115 +572,161 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════
-          PRICING TEASER
-      ════════════════════════════════════════════════════ */}
-      <section className="bg-[var(--surface)] py-20 sm:py-24">
-        <div className="mx-auto max-w-2xl px-5 sm:px-6 text-center">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#10B981]/25 bg-[#10B981]/08 px-4 py-1.5">
-            <span className="text-[12.5px] font-semibold text-[#10B981]">Transparent pricing</span>
+      {/* ══════════════════════════════════════════════════════
+          PRICING TEASER — Full-width comparison strip
+      ══════════════════════════════════════════════════════ */}
+      <section className="bg-[var(--surface)] py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#10B981]/25 bg-[#10B981]/08 px-4 py-1.5">
+              <span className="text-[12px] font-semibold text-[#10B981]">Transparent pricing</span>
+            </div>
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[36px]">
+              Competitors charge $20/mo for this
+            </h2>
+            <p className="mt-3 text-[15px] text-[var(--text-secondary)]">
+              Most features free forever. Pro $5/mo. Business $9/mo. No hidden limits.
+            </p>
           </div>
-          <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[34px]">
-            Competitors charge $20/mo for what we give free
-          </h2>
-          <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-secondary)]">
-            Most features free forever. Pro is $5/mo. Business is $9/mo. No hidden limits.
-          </p>
-          <div className="mt-7 flex flex-wrap justify-center gap-3">
-            <Link href="/pricing">
-              <Button size="lg" variant="secondary" className="h-11 px-6">
-                Compare plans <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/create">
-              <Button size="lg" className="h-11 px-6 glow-blue-sm">Start for free</Button>
-            </Link>
-          </div>
-        </div>
-      </section>
 
-      {/* ════════════════════════════════════════════════════
-          BOTTOM CTA
-      ════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden" style={{ background: '#07080d' }}>
-        {/* Layered atmosphere */}
-        <div className="absolute inset-0 bg-dot-grid opacity-[0.06]" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[480px] w-[900px] rounded-full blur-[140px] pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse, rgba(0,87,255,0.22) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-0 right-0 h-[400px] w-[600px] blur-[120px] pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse, rgba(0,200,150,0.1) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-0 left-0 h-[300px] w-[400px] blur-[100px] pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse, rgba(139,92,246,0.08) 0%, transparent 70%)' }} />
-
-        {/* Top border glow */}
-        <div className="absolute top-0 inset-x-0 h-px"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(0,87,255,0.4), rgba(0,200,150,0.3), transparent)' }} />
-
-        <div className="relative mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-24 sm:py-32">
-
-          {/* Stats strip */}
-          <div className="mb-14 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {/* Plan comparison grid */}
+          <div className="grid gap-4 sm:grid-cols-3 mb-8">
             {[
-              { value: '10,000+', label: 'businesses',        color: '#0057FF' },
-              { value: '5M+',     label: 'scans tracked',     color: '#00C896' },
-              { value: '15+',     label: 'QR code types',     color: '#8B5CF6' },
-              { value: '<200ms',  label: 'redirect speed',    color: '#F59E0B' },
-            ].map((s) => (
-              <div key={s.label}
-                className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-4 text-center backdrop-blur-sm">
-                <div className="text-[20px] font-bold tracking-tight" style={{ color: s.color }}>{s.value}</div>
-                <div className="mt-1 text-[12px] text-white/40">{s.label}</div>
+              {
+                name: 'Free', price: '$0', suffix: 'forever', color: '#10B981',
+                features: ['3 dynamic QR codes', '4 QR types', 'PNG + SVG download', 'Basic scan counts'],
+                cta: 'Start free', href: '/create', primary: false,
+              },
+              {
+                name: 'Pro', price: '$5', suffix: '/month', color: '#0057FF',
+                features: ['50 dynamic QR codes', 'All 10 Pro types', 'Full analytics', 'PDF downloads + logo'],
+                cta: 'Get Pro', href: '/pricing', primary: true,
+              },
+              {
+                name: 'Business', price: '$9', suffix: '/month', color: '#8B5CF6',
+                features: ['Unlimited QR codes', 'All 18 types', 'Bulk up to 500', 'CSV export + API'],
+                cta: 'Get Business', href: '/pricing', primary: false,
+              },
+            ].map((plan) => (
+              <div key={plan.name}
+                className={`rounded-2xl border p-6 ${plan.primary
+                  ? 'border-[#0057FF]/40 bg-[#0057FF]/04 shadow-[0_0_0_1px_rgba(0,87,255,0.08),0_4px_24px_rgba(0,87,255,0.08)]'
+                  : 'border-[var(--border)] bg-[var(--bg)]'}`}>
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="text-[12px] font-bold uppercase tracking-widest" style={{ color: plan.color }}>
+                    {plan.name}
+                  </span>
+                  {plan.primary && (
+                    <span className="rounded-full bg-[#0057FF] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                      Popular
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-end gap-1 mb-5">
+                  <span className="text-[32px] font-extrabold tracking-tight text-[var(--text-primary)]">{plan.price}</span>
+                  <span className="mb-1 text-[13px] text-[var(--text-secondary)]">{plan.suffix}</span>
+                </div>
+                <ul className="mb-6 space-y-2.5">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-[13.5px] text-[var(--text-primary)]">
+                      <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: plan.color }} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href={plan.href} className="block">
+                  <Button
+                    size="md"
+                    variant={plan.primary ? 'primary' : 'secondary'}
+                    className={['w-full font-semibold', plan.primary ? 'glow-blue-sm' : ''].join(' ')}
+                  >
+                    {plan.cta} <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
             ))}
           </div>
 
-          {/* Headline + CTA */}
+          <p className="text-center text-[13px] text-[var(--text-tertiary)]">
+            All plans include unlimited static QR codes · No credit card for free plan
+          </p>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          BOTTOM CTA — Dark section
+      ══════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden" style={{ background: '#060810' }}>
+        <div className="absolute inset-0 bg-dot-grid opacity-[0.07]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[500px] w-[900px] blur-[130px] pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse, rgba(0,87,255,0.25) 0%, transparent 70%)' }} />
+        <div className="absolute bottom-0 right-0 h-[350px] w-[500px] blur-[110px] pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse, rgba(0,200,150,0.12) 0%, transparent 70%)' }} />
+        <div className="absolute top-0 inset-x-0 h-px"
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(0,87,255,0.5), rgba(0,200,150,0.4), transparent)' }} />
+
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8 py-20 sm:py-28">
+
+          {/* Stats row */}
+          <div className="mb-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {[
+              { value: '10,000+', label: 'businesses',     color: '#60a5fa' },
+              { value: '5M+',     label: 'scans tracked',  color: '#34d399' },
+              { value: '15+',     label: 'QR code types',  color: '#a78bfa' },
+              { value: '<200ms',  label: 'redirect speed', color: '#fbbf24' },
+            ].map((s) => (
+              <div key={s.label}
+                className="rounded-2xl border border-white/[0.07] bg-white/[0.04] px-5 py-5 text-center">
+                <div className="text-[26px] font-extrabold tracking-tight sm:text-[30px]" style={{ color: s.color }}>
+                  {s.value}
+                </div>
+                <div className="mt-1.5 text-[12.5px] font-medium text-white/50">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Headline */}
           <div className="text-center">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 backdrop-blur-sm">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-[#00C896]"
                 style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
-              <span className="text-[12.5px] font-semibold text-white/60">Start building in seconds</span>
+              <span className="text-[12px] font-semibold text-white/60">Free to start — takes 30 seconds</span>
             </div>
 
-            <h2 className="text-[34px] font-extrabold tracking-[-0.04em] leading-[1.1] text-white sm:text-[50px]">
-              Your first QR code
+            <h2 className="text-[32px] font-extrabold tracking-[-0.04em] leading-[1.1] text-white sm:text-[48px] lg:text-[54px]">
+              Your first QR code is
               <br />
-              <span style={{
-                background: 'linear-gradient(135deg, #60a5fa 0%, #34d399 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}>
-                takes 30 seconds
-              </span>
+              <span className="text-gradient-light">already waiting for you</span>
             </h2>
 
-            <p className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-white/50">
-              No credit card. No account needed to download.
-              Upgrade only when you need more.
+            <p className="mx-auto mt-6 max-w-lg text-[15px] leading-relaxed text-white/55">
+              No account needed to generate and download. Sign up free to save, track, and update your codes anytime.
             </p>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
+            {/* CTA buttons — solid colors, no invisible-text trap */}
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link href="/create">
-                <Button size="lg"
-                  className="h-12 px-8 text-[15px] bg-white text-[#0057FF] hover:bg-blue-50 shadow-[0_8px_40px_rgba(0,87,255,0.25)] focus-visible:ring-white">
+                <button className="inline-flex h-12 items-center gap-2 rounded-xl bg-[#0057FF] px-8 text-[15px] font-semibold text-white
+                                   shadow-[0_8px_32px_rgba(0,87,255,0.4)] transition-all hover:bg-[#0049E0] hover:shadow-[0_8px_40px_rgba(0,87,255,0.5)]
+                                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0057FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#060810]">
                   Generate QR Code Free
                   <ArrowRight className="h-4 w-4" />
-                </Button>
+                </button>
               </Link>
               <Link href="/pricing">
-                <Button size="lg" variant="ghost"
-                  className="h-12 px-8 text-[15px] text-white/70 hover:text-white hover:bg-white/[0.06] border border-white/10">
+                <button className="inline-flex h-12 items-center gap-2 rounded-xl border border-white/20 bg-white/08 px-8
+                                   text-[15px] font-semibold text-white transition-all hover:border-white/30 hover:bg-white/12
+                                   focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060810]">
                   View pricing
-                </Button>
+                </button>
               </Link>
             </div>
 
-            {/* Trust chips */}
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-              {['No credit card', 'Free codes never expire', 'Cancel anytime'].map((label) => (
-                <div key={label} className="flex items-center gap-1.5 text-[13px] text-white/35">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#00C896]/60" />
+            {/* Trust chips — legible on dark */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
+              {['No credit card required', 'Free codes never expire', 'Cancel anytime'].map((label) => (
+                <div key={label} className="flex items-center gap-2 text-[13px] font-medium text-white/60">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-[#00C896]" />
                   {label}
                 </div>
               ))}
@@ -638,7 +734,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Bottom border */}
         <div className="absolute bottom-0 inset-x-0 h-px"
           style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)' }} />
       </section>
