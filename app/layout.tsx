@@ -30,7 +30,6 @@ export const metadata: Metadata = {
     siteName: 'QRWide',
     title: 'QRWide — Free QR Code Generator with Analytics',
     description: 'Create, track, and update QR codes in seconds. Free forever for the basics.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',

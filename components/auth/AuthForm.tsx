@@ -29,10 +29,11 @@ export function AuthForm({ mode, redirectTo = '/dashboard' }: AuthFormProps) {
 
     try {
       if (mode === 'signup') {
+        const encodedRedirect = encodeURIComponent(redirectTo)
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${redirectTo}` },
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodedRedirect}` },
         })
         if (error) throw error
         setSent(true)
@@ -51,10 +52,11 @@ export function AuthForm({ mode, redirectTo = '/dashboard' }: AuthFormProps) {
 
   async function handleGoogle() {
     setGoogleLoading(true)
+    const encodedRedirect = encodeURIComponent(redirectTo)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${redirectTo}`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodedRedirect}`,
       },
     })
     if (error) toast(error.message, 'error')

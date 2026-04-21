@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getPlanLimits } from '@/lib/plans'
-import { generateShortcode } from '@/lib/qr/shortcode'
+import { createQRCode } from '@/lib/db/queries'
 
 export async function POST(request: NextRequest) {
   const supabase = createClient()
@@ -12,12 +12,22 @@ export async function POST(request: NextRequest) {
   const limits = getPlanLimits(profile?.plan ?? 'free')
 
   const { rows } = await request.json() as {
-    rows: Array<{ name: string; destination_url: string; folder?: string }>
+    rows: Array<{ name: string; destination_url: string; folder?: string; tags?: string }>
   }
 
   if (rows.length > limits.maxBulk) {
     return NextResponse.json(
       { error: `Your plan allows up to ${limits.maxBulk} QR codes at once. Upgrade for more.` },
+      { status: 403 }
+    )
+  }
+
+  const currentDynamic = profile?.qr_count ?? 0
+  if (limits.maxDynamicQr !== Infinity && currentDynamic + rows.length > limits.maxDynamicQr) {
+    return NextResponse.json(
+      {
+        error: `This upload would exceed your ${limits.maxDynamicQr} dynamic QR code limit. Upgrade to continue.`,
+      },
       { status: 403 }
     )
   }
@@ -29,34 +39,43 @@ export async function POST(request: NextRequest) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`))
       }
 
+      const parseTags = (raw?: string) =>
+        raw
+          ?.split(/[;,]/)
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+
       // Generate QR codes server-side using qrcode library
       const QRCode = (await import('qrcode')).default
 
       const generated: Array<{ name: string; shortcode: string; png: Buffer }> = []
 
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i]
-        const shortcode = generateShortcode()
+      try {
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i]
+          const qr = await createQRCode({
+            userId: user.id,
+            name: row.name,
+            type: 'url',
+            destination: row.destination_url,
+            isDynamic: true,
+            folder: row.folder,
+            tags: parseTags(row.tags),
+          })
 
-        // Insert QR code record
-        await supabase.from('qr_codes').insert({
-          user_id: user.id,
-          shortcode,
-          name: row.name,
-          type: 'url',
-          destination: row.destination_url,
-          is_dynamic: true,
-          folder: row.folder,
-        })
+          // Generate PNG buffer
+          const png = await QRCode.toBuffer(
+            `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'}/s/${qr.shortcode}`,
+            { width: 400, margin: 2, errorCorrectionLevel: 'H' }
+          )
 
-        // Generate PNG buffer
-        const png = await QRCode.toBuffer(
-          `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'}/s/${shortcode}`,
-          { width: 400, margin: 2, errorCorrectionLevel: 'H' }
-        )
-
-        generated.push({ name: row.name, shortcode, png })
-        send({ progress: i + 1, total: rows.length })
+          generated.push({ name: row.name, shortcode: qr.shortcode, png })
+          send({ progress: i + 1, total: rows.length })
+        }
+      } catch (error) {
+        send({ error: (error as Error).message || 'Bulk generation failed.' })
+        controller.close()
+        return
       }
 
       // Create ZIP using JSZip

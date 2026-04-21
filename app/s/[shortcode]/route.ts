@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Redis } from '@upstash/redis'
+import { redis } from '@/lib/redis'
+import { isAbsoluteHttpUrl, normalizeQrDestination } from '@/lib/qr/url'
 
 export const runtime = 'edge'
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-})
+function getRedirectTarget(destination: string, request: NextRequest): URL {
+  const normalized = normalizeQrDestination(destination)
+
+  if (isAbsoluteHttpUrl(normalized)) {
+    return new URL(normalized)
+  }
+
+  return new URL('/', request.url)
+}
 
 export async function GET(
   request: NextRequest,
@@ -16,7 +22,9 @@ export async function GET(
 
   // Step 1: Redis cache lookup (target <5ms)
   const cacheKey = `qr:shortcode:${shortcode}`
-  let record = await redis.get<{ destination: string; qrId: string; isActive: boolean }>(cacheKey)
+  let record = redis
+    ? await redis.get<{ destination: string; qrId: string; isActive: boolean }>(cacheKey)
+    : null
 
   if (!record) {
     // Step 2: Fallback to Postgres via REST API (no ORM overhead at edge)
@@ -41,7 +49,9 @@ export async function GET(
     record = { destination: row.destination, qrId: row.id, isActive: row.is_active }
 
     // Cache for 1 hour (fire-and-forget, don't await)
-    redis.set(cacheKey, record, { ex: 3600 }).catch(() => {})
+    if (redis) {
+      redis.set(cacheKey, record, { ex: 3600 }).catch(() => {})
+    }
   }
 
   if (!record.isActive) {
@@ -52,9 +62,8 @@ export async function GET(
   trackScan(request, record.qrId).catch(() => {})
 
   // Step 4: Instant redirect
-  const response = NextResponse.redirect(record.destination, 301)
+  const response = NextResponse.redirect(getRedirectTarget(record.destination, request), 302)
   response.headers.set('Cache-Control', 'no-store')
-  response.headers.set('Access-Control-Allow-Origin', '*')
   return response
 }
 
@@ -74,8 +83,10 @@ async function trackScan(request: NextRequest, qrId: string): Promise<void> {
   const country = request.headers.get('cf-ipcountry') ?? undefined
   const city = request.headers.get('cf-ipcity') ?? undefined
   const region = request.headers.get('cf-region') ?? undefined
-  const lat = request.headers.get('cf-iplongitude') ? parseFloat(request.headers.get('cf-iplatitude')!) : undefined
-  const lng = request.headers.get('cf-iplongitude') ? parseFloat(request.headers.get('cf-iplongitude')!) : undefined
+  const latHeader = request.headers.get('cf-iplatitude')
+  const lngHeader = request.headers.get('cf-iplongitude')
+  const lat = latHeader ? parseFloat(latHeader) : undefined
+  const lng = lngHeader ? parseFloat(lngHeader) : undefined
 
   const { deviceType, os, browser } = parseUserAgent(ua)
 
@@ -83,50 +94,37 @@ async function trackScan(request: NextRequest, qrId: string): Promise<void> {
   const statsKey = `qr:stats:${qrId}:day:${today}`
 
   // Increment daily counter in Redis (synced to PG nightly)
-  await redis.incr(statsKey)
-  await redis.expire(statsKey, 172800)
+  if (redis) {
+    await redis.incr(statsKey)
+    await redis.expire(statsKey, 172800)
+  }
 
-  // Write full scan event to Supabase via REST
+  // Write the full scan event and update denormalized counters atomically.
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-  await fetch(`${supabaseUrl}/rest/v1/scan_events`, {
+  await fetch(`${supabaseUrl}/rest/v1/rpc/record_scan_event`, {
     method: 'POST',
     headers: {
       apikey: supabaseKey,
       Authorization: `Bearer ${supabaseKey}`,
       'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
     },
     body: JSON.stringify({
-      qr_id: qrId,
-      country,
-      region,
-      city,
-      lat,
-      lng,
-      device_type: deviceType,
-      os,
-      browser,
-      ip_hash: ipHash,
-      referrer: request.headers.get('referer'),
-      user_agent: ua,
+      p_qr_id: qrId,
+      p_country: country,
+      p_region: region,
+      p_city: city,
+      p_lat: lat,
+      p_lng: lng,
+      p_device_type: deviceType,
+      p_os: os,
+      p_browser: browser,
+      p_ip_hash: ipHash,
+      p_referrer: request.headers.get('referer'),
+      p_user_agent: ua,
     }),
   })
-
-  // Also increment total_scans on qr_codes row
-  await fetch(
-    `${supabaseUrl}/rest/v1/rpc/increment_qr_scans`,
-    {
-      method: 'POST',
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ qr_id: qrId }),
-    }
-  )
 }
 
 function parseUserAgent(ua: string): { deviceType: string; os: string; browser: string } {

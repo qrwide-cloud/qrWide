@@ -65,8 +65,14 @@ export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps
   }
 
   // Aggregate stats
-  const uniqueIps = new Set(scans.map((s) => s.ip_hash)).size
-  const days = range === 'all' ? 90 : parseInt(range)
+  const uniqueIps = new Set(scans.map((s) => s.ip_hash).filter(Boolean)).size
+  const oldestScan = scans[scans.length - 1]?.scanned_at
+  const days = range === 'all'
+    ? Math.max(
+        1,
+        oldestScan ? Math.ceil((Date.now() - new Date(oldestScan).getTime()) / 86400000) : 1
+      )
+    : parseInt(range)
   const dailyAvg = scans.length > 0 ? (scans.length / days).toFixed(1) : '0'
   const lastScanned = scans[0]?.scanned_at ? new Date(scans[0].scanned_at).toLocaleDateString() : 'Never'
 
@@ -106,6 +112,11 @@ export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps
           </div>
         </div>
         <div className="flex gap-2">
+          <a href={`/share/${qr.shortcode}`}>
+            <Button variant="secondary" size="sm">
+              Share page
+            </Button>
+          </a>
           {plan !== 'free' && (
             <Button variant="secondary" size="sm" onClick={exportCSV}>
               Export CSV

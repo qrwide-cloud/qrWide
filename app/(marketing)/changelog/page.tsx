@@ -8,15 +8,15 @@ const ENTRIES = [
   {
     date: 'April 20, 2025',
     version: 'v1.0.0',
-    tag: 'Launch',
+    tag: 'Initial Build',
     items: [
-      'QRWide is live! Dynamic QR codes, real-time analytics, custom designs.',
-      'Free tier: 3 dynamic QR codes, unlimited static QR codes.',
-      'Pro plan: $5/mo — full analytics, custom logo, PDF download.',
-      'Business plan: $9/mo — unlimited QR codes, bulk up to 500, API access.',
-      'Bulk QR code generator: CSV upload → ZIP download.',
-      'Google OAuth + email/password authentication.',
-      'Dark mode support.',
+      'Core QR creation flow with dynamic QR codes, analytics, and custom styling.',
+      'Free tier with 3 dynamic QR codes plus public QR creation and downloads.',
+      'Pro plan with full analytics, more QR types, PDF downloads, and higher limits.',
+      'Business plan with all QR types, CSV exports, and the highest usage limits.',
+      'Bulk QR code generator with CSV upload and ZIP download.',
+      'Google OAuth plus email/password authentication.',
+      'Theme support and account settings.',
     ],
   },
 ]
@@ -26,7 +26,7 @@ export default function ChangelogPage() {
     <div className="py-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">Changelog</h1>
-        <p className="text-[var(--text-secondary)] mb-12">What's new in QRWide</p>
+        <p className="text-[var(--text-secondary)] mb-12">What&apos;s new in QRWide</p>
 
         <div className="space-y-12">
           {ENTRIES.map((entry) => (

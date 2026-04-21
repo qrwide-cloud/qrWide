@@ -1,16 +1,21 @@
 import { redis } from '@/lib/redis'
 
 export async function incrementScanCount(qrId: string): Promise<void> {
+  if (!redis) return
+
   const today = new Date().toISOString().split('T')[0]
   const key = `qr:stats:${qrId}:day:${today}`
+
   await redis.incr(key)
-  // 48hr TTL — nightly cron syncs to Postgres
+  // 48hr TTL - nightly cron syncs to Postgres
   await redis.expire(key, 172800)
 }
 
 export async function getCachedDestination(
   shortcode: string
 ): Promise<{ destination: string; qrId: string; isActive: boolean } | null> {
+  if (!redis) return null
+
   const key = `qr:shortcode:${shortcode}`
   const cached = await redis.get<{ destination: string; qrId: string; isActive: boolean }>(key)
   return cached
@@ -20,11 +25,14 @@ export async function cacheDestination(
   shortcode: string,
   data: { destination: string; qrId: string; isActive: boolean }
 ): Promise<void> {
+  if (!redis) return
+
   const key = `qr:shortcode:${shortcode}`
   await redis.set(key, data, { ex: 3600 }) // 1hr TTL
 }
 
 export async function invalidateShortcode(shortcode: string): Promise<void> {
+  if (!redis) return
   await redis.del(`qr:shortcode:${shortcode}`)
 }
 

@@ -102,8 +102,9 @@ export async function createQRCode(params: {
 
   if (error) throw error
 
-  // Increment profile qr_count
-  await supabase.rpc('increment_qr_count', { user_id: params.userId })
+  if (params.isDynamic ?? true) {
+    await supabase.rpc('increment_qr_count', { user_id: params.userId })
+  }
 
   return data
 }
@@ -143,15 +144,19 @@ export async function updateQRCode(
 
 export async function deleteQRCode(id: string, userId: string) {
   const supabase = createClient()
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('qr_codes')
     .delete()
     .eq('id', id)
     .eq('user_id', userId)
+    .select('is_dynamic')
+    .single()
 
   if (error) throw error
 
-  await supabase.rpc('decrement_qr_count', { user_id: userId })
+  if (data?.is_dynamic) {
+    await supabase.rpc('decrement_qr_count', { user_id: userId })
+  }
 }
 
 export async function getQRAnalytics(qrId: string, userId: string, range: '7d' | '30d' | '90d' | 'all') {
@@ -202,21 +207,18 @@ export async function logScanEvent(params: {
   userAgent?: string
 }) {
   const supabase = createClient()
-  await supabase.from('scan_events').insert({
-    qr_id: params.qrId,
-    country: params.country,
-    region: params.region,
-    city: params.city,
-    lat: params.lat,
-    lng: params.lng,
-    device_type: params.deviceType,
-    os: params.os,
-    browser: params.browser,
-    ip_hash: params.ipHash,
-    referrer: params.referrer,
-    user_agent: params.userAgent,
+  await supabase.rpc('record_scan_event', {
+    p_qr_id: params.qrId,
+    p_country: params.country,
+    p_region: params.region,
+    p_city: params.city,
+    p_lat: params.lat,
+    p_lng: params.lng,
+    p_device_type: params.deviceType,
+    p_os: params.os,
+    p_browser: params.browser,
+    p_ip_hash: params.ipHash,
+    p_referrer: params.referrer,
+    p_user_agent: params.userAgent,
   })
-
-  // Update denormalized counters via dedicated RPC
-  await supabase.rpc('increment_qr_scans', { qr_id: params.qrId })
 }

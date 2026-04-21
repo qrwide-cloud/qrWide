@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
 import { useToast } from '@/components/ui/Toast'
-import { createClient } from '@/lib/supabase/client'
-import type { Database } from '@/lib/db/schema'
+import { QRPreview } from '@/components/qr/QRPreview'
+import type { Database, QRStyle } from '@/lib/db/schema'
 
 type QRCode = Database['public']['Tables']['qr_codes']['Row']
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -41,9 +41,12 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
 
   const { toast } = useToast()
   const router = useRouter()
-  const supabase = createClient()
 
-  // Keyboard shortcuts
+  const baseUrl =
+    typeof window !== 'undefined'
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'
+
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName
@@ -57,6 +60,7 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
         document.getElementById('qr-search')?.focus()
       }
     }
+
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [router])
@@ -73,7 +77,6 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     })
 
-  // Last 3 QR codes for "recent" pinning
   const recentIds = [...initialQRCodes]
     .sort((a, b) => new Date(b.updated_at ?? b.created_at).getTime() - new Date(a.updated_at ?? a.created_at).getTime())
     .slice(0, 3)
@@ -81,15 +84,20 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
 
   async function toggleActive(qr: QRCode) {
     setTogglingId(qr.id)
-    const { error } = await supabase
-      .from('qr_codes')
-      .update({ is_active: !qr.is_active })
-      .eq('id', qr.id)
+    const res = await fetch(`/api/qr/${qr.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_active: !qr.is_active }),
+    })
 
-    if (!error) {
+    if (res.ok) {
       setQRCodes((prev) => prev.map((q) => (q.id === qr.id ? { ...q, is_active: !q.is_active } : q)))
       toast(qr.is_active ? 'QR code paused' : 'QR code activated')
+    } else {
+      const body = await res.json().catch(() => ({ error: 'Failed to update QR code' }))
+      toast(body.error ?? 'Failed to update QR code', 'error')
     }
+
     setTogglingId(null)
   }
 
@@ -99,66 +107,95 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
       setEditingId(null)
       return
     }
-    const { error } = await supabase.from('qr_codes').update({ name }).eq('id', qr.id)
-    if (!error) {
+
+    const res = await fetch(`/api/qr/${qr.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    })
+
+    if (res.ok) {
       setQRCodes((prev) => prev.map((q) => (q.id === qr.id ? { ...q, name } : q)))
       toast('Renamed!')
+    } else {
+      const body = await res.json().catch(() => ({ error: 'Failed to rename QR code' }))
+      toast(body.error ?? 'Failed to rename QR code', 'error')
     }
+
     setEditingId(null)
   }
 
   async function duplicate(qr: QRCode) {
-    const { data, error } = await supabase
-      .from('qr_codes')
-      .insert({
-        user_id: qr.user_id,
-        shortcode: Math.random().toString(36).slice(2, 8),
+    const res = await fetch('/api/qr/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         name: `${qr.name} (copy)`,
         type: qr.type,
         destination: qr.destination,
-        is_dynamic: qr.is_dynamic,
+        isDynamic: qr.is_dynamic,
         style: qr.style,
         folder: qr.folder,
         tags: qr.tags,
-      })
-      .select()
-      .single()
+      }),
+    })
 
-    if (!error && data) {
-      setQRCodes((prev) => [data, ...prev])
-      toast('Duplicated!')
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ error: 'Failed to duplicate QR code' }))
+      toast(body.error ?? 'Failed to duplicate QR code', 'error')
+      return
     }
+
+    const { id, shortcode } = await res.json()
+    const duplicated: QRCode = {
+      ...qr,
+      id,
+      shortcode,
+      name: `${qr.name} (copy)`,
+      total_scans: 0,
+      unique_scans: 0,
+      last_scanned_at: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+
+    setQRCodes((prev) => [duplicated, ...prev])
+    toast('Duplicated!')
   }
 
   async function deleteQR(qr: QRCode) {
     if (!confirm(`Delete "${qr.name}"? This cannot be undone.`)) return
-    const { error } = await supabase.from('qr_codes').delete().eq('id', qr.id)
-    if (!error) {
+
+    const res = await fetch(`/api/qr/${qr.id}`, {
+      method: 'DELETE',
+    })
+
+    if (res.ok) {
       setQRCodes((prev) => prev.filter((q) => q.id !== qr.id))
       toast('Deleted')
+    } else {
+      const body = await res.json().catch(() => ({ error: 'Failed to delete QR code' }))
+      toast(body.error ?? 'Failed to delete QR code', 'error')
     }
   }
 
   async function copyShortlink(shortcode: string) {
-    const url = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'}/s/${shortcode}`
+    const url = `${baseUrl}/s/${shortcode}`
     await navigator.clipboard.writeText(url)
     toast('Copied!')
   }
 
-  // Stats
-  const totalScans = qrCodes.reduce((s, q) => s + q.total_scans, 0)
   const activeCodes = qrCodes.filter((q) => q.is_active).length
   const topCode = [...qrCodes].sort((a, b) => b.total_scans - a.total_scans)[0]
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="mx-auto max-w-6xl p-4 md:p-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">Dashboard</h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Press <kbd className="font-mono text-xs bg-[var(--surface)] border border-[var(--border)] rounded px-1">N</kbd> for new ·{' '}
-            <kbd className="font-mono text-xs bg-[var(--surface)] border border-[var(--border)] rounded px-1">/</kbd> to search
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            Press <kbd className="rounded border border-[var(--border)] bg-[var(--surface)] px-1 font-mono text-xs">N</kbd> for new ·{' '}
+            <kbd className="rounded border border-[var(--border)] bg-[var(--surface)] px-1 font-mono text-xs">/</kbd> to search
           </p>
         </div>
         <div className="flex gap-2">
@@ -171,8 +208,7 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 mb-8">
+      <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
           { label: 'Total QR codes', value: qrCodes.length },
           { label: 'Scans this month', value: profile?.scan_count_month ?? 0 },
@@ -180,81 +216,80 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
           { label: 'Top code', value: topCode ? `${topCode.total_scans} scans` : '—', sub: topCode?.name },
         ].map((stat) => (
           <Card key={stat.label} className="p-4">
-            <div className="text-xs text-[var(--text-secondary)] mb-1">{stat.label}</div>
+            <div className="mb-1 text-xs text-[var(--text-secondary)]">{stat.label}</div>
             <div className="text-2xl font-bold text-[var(--text-primary)]">{stat.value}</div>
-            {stat.sub && <div className="text-xs text-[var(--text-secondary)] truncate mt-0.5">{stat.sub}</div>}
+            {stat.sub ? <div className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">{stat.sub}</div> : null}
           </Card>
         ))}
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-6">
+      <div className="mb-6 flex flex-wrap gap-3">
         <input
           id="qr-search"
           type="search"
           placeholder="Search QR codes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="h-9 rounded-[8px] border border-[var(--border)] bg-white dark:bg-[#141414] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF] min-w-[200px]"
+          className="min-w-[200px] rounded-[8px] border border-[var(--border)] bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF] dark:bg-[#141414] h-9"
         />
-        {folders.length > 0 && (
+        {folders.length > 0 ? (
           <select
             value={folderFilter}
             onChange={(e) => setFolderFilter(e.target.value)}
-            className="h-9 rounded-[8px] border border-[var(--border)] bg-white dark:bg-[#141414] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]"
+            className="h-9 rounded-[8px] border border-[var(--border)] bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF] dark:bg-[#141414]"
           >
             <option value="">All folders</option>
             {folders.map((f) => (
               <option key={f.id} value={f.name}>{f.name}</option>
             ))}
           </select>
-        )}
+        ) : null}
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as never)}
-          className="h-9 rounded-[8px] border border-[var(--border)] bg-white dark:bg-[#141414] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF]"
+          className="h-9 rounded-[8px] border border-[var(--border)] bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF] dark:bg-[#141414]"
         >
           <option value="created">Newest first</option>
           <option value="scans">Most scans</option>
-          <option value="name">A–Z</option>
+          <option value="name">A-Z</option>
         </select>
       </div>
 
-      {/* QR code list */}
       {filtered.length === 0 ? (
         <Card className="p-16 text-center">
-          <div className="text-5xl mb-4">📭</div>
+          <div className="mb-4 text-5xl">📭</div>
           <h3 className="text-lg font-semibold text-[var(--text-primary)]">
             {search ? 'No QR codes match your search' : 'Create your first QR code'}
           </h3>
-          <p className="text-sm text-[var(--text-secondary)] mt-2 mb-6">
-            {search
-              ? 'Try different search terms'
-              : 'Share your QR code to start seeing scans here'}
+          <p className="mb-6 mt-2 text-sm text-[var(--text-secondary)]">
+            {search ? 'Try different search terms' : 'Share your QR code to start seeing scans here'}
           </p>
-          {!search && (
+          {!search ? (
             <Link href="/create">
               <Button>+ Create QR code</Button>
             </Link>
-          )}
+          ) : null}
         </Card>
       ) : (
         <div className="space-y-3">
           {filtered.map((qr) => {
             const typeBadge = TYPE_BADGE[qr.type] ?? { label: qr.type, variant: 'default' as const }
             const isRecent = recentIds.includes(qr.id)
+            const qrUrl = `${baseUrl}/s/${qr.shortcode}`
 
             return (
               <Card key={qr.id} className="p-4">
-                <div className="flex items-center gap-4">
-                  {/* QR thumbnail placeholder */}
-                  <div className="h-12 w-12 rounded-[8px] bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center flex-shrink-0">
-                    <span className="text-xl">⬛</span>
-                  </div>
+                <div className="flex items-start gap-4">
+                  <Link
+                    href={`/share/${qr.shortcode}`}
+                    className="rounded-[10px] border border-[var(--border)] bg-white p-1.5 transition-colors hover:border-[#0066FF]/40"
+                    title="View QR code"
+                  >
+                    <QRPreview content={qrUrl} style={(qr.style ?? {}) as QRStyle} size={56} />
+                  </Link>
 
-                  {/* Name + destination */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
                       {editingId === qr.id ? (
                         <input
                           autoFocus
@@ -265,46 +300,69 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
                             if (e.key === 'Enter') saveName(qr)
                             if (e.key === 'Escape') setEditingId(null)
                           }}
-                          className="text-sm font-semibold bg-transparent border-b-2 border-[#0066FF] outline-none text-[var(--text-primary)] w-full max-w-[240px]"
+                          className="w-full max-w-[240px] border-b-2 border-[#0066FF] bg-transparent text-sm font-semibold text-[var(--text-primary)] outline-none"
                         />
                       ) : (
-                        <button
-                          className="text-sm font-semibold text-[var(--text-primary)] hover:text-[#0066FF] truncate text-left"
-                          onClick={() => { setEditingId(qr.id); setEditingName(qr.name) }}
-                          title="Click to rename"
+                        <Link
+                          href={`/share/${qr.shortcode}`}
+                          className="truncate text-left text-sm font-semibold text-[var(--text-primary)] hover:text-[#0066FF]"
+                          title="Open QR code page"
                         >
                           {qr.name}
-                        </button>
+                        </Link>
                       )}
-                      {isRecent && (
-                        <span className="text-[10px] text-[var(--text-secondary)] bg-[var(--surface)] px-1.5 py-0.5 rounded-[4px]">recent</span>
-                      )}
+                      {isRecent ? (
+                        <span className="rounded-[4px] bg-[var(--surface)] px-1.5 py-0.5 text-[10px] text-[var(--text-secondary)]">recent</span>
+                      ) : null}
                     </div>
-                    <div className="text-xs text-[var(--text-secondary)] truncate mt-0.5">
-                      {qr.destination}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1.5">
+
+                    <div className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">{qr.destination}</div>
+
+                    <div className="mt-1.5 flex items-center gap-2">
                       <Badge variant={typeBadge.variant}>{typeBadge.label}</Badge>
                       <Badge variant={qr.is_dynamic ? 'blue' : 'default'}>
                         {qr.is_dynamic ? 'Dynamic' : 'Static'}
                       </Badge>
                     </div>
+
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <Link href={`/share/${qr.shortcode}`}>
+                        <Button size="sm">View QR</Button>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setEditingId(qr.id)
+                          setEditingName(qr.name)
+                        }}
+                        className="inline-flex items-center gap-1 rounded-[8px] border border-[var(--border)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+                        title="Rename QR code"
+                      >
+                        <EditIcon />
+                        Rename
+                      </button>
+                      <button
+                        onClick={() => copyShortlink(qr.shortcode)}
+                        className="inline-flex items-center gap-1 rounded-[8px] border border-[var(--border)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+                        title="Copy shortlink"
+                      >
+                        <CopyIcon />
+                        Copy link
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Stats */}
-                  <div className="hidden sm:flex flex-col items-end gap-1 flex-shrink-0">
+                  <div className="hidden flex-shrink-0 flex-col items-end gap-1 sm:flex">
                     <div className="text-sm font-semibold text-[var(--text-primary)]">
                       {qr.total_scans.toLocaleString()}
                     </div>
                     <div className="text-xs text-[var(--text-secondary)]">scans</div>
                   </div>
 
-                  {/* Active toggle */}
                   <button
                     onClick={() => toggleActive(qr)}
                     disabled={togglingId === qr.id}
                     className={[
-                      'flex-shrink-0 relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200',
+                      'relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200',
                       qr.is_active ? 'bg-[#10B981]' : 'bg-[#E5E7EB] dark:bg-[#2A2A2A]',
                     ].join(' ')}
                     title={qr.is_active ? 'Pause QR code' : 'Activate QR code'}
@@ -317,32 +375,31 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
                     />
                   </button>
 
-                  {/* Actions menu */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                      onClick={() => copyShortlink(qr.shortcode)}
-                      className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)] transition-colors"
-                      title="Copy shortlink"
-                    >
-                      <CopyIcon />
-                    </button>
+                  <div className="flex flex-shrink-0 items-center gap-1">
                     <Link
                       href={`/analytics/${qr.id}`}
-                      className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)] transition-colors"
+                      className="rounded-[6px] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--text-primary)]"
                       title="Analytics"
                     >
                       <ChartIcon />
                     </Link>
+                    <Link
+                      href={`/share/${qr.shortcode}`}
+                      className="rounded-[6px] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--text-primary)]"
+                      title="Public share page"
+                    >
+                      <ShareIcon />
+                    </Link>
                     <button
                       onClick={() => duplicate(qr)}
-                      className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)] transition-colors"
+                      className="rounded-[6px] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--text-primary)]"
                       title="Duplicate"
                     >
                       <DuplicateIcon />
                     </button>
                     <button
                       onClick={() => deleteQR(qr)}
-                      className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[#EF4444] transition-colors"
+                      className="rounded-[6px] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface)] hover:text-[#EF4444]"
                       title="Delete"
                     >
                       <TrashIcon />
@@ -359,14 +416,25 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
 }
 
 function CopyIcon() {
-  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" strokeWidth="1.25"/><path d="M9 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v5a1 1 0 001 1h2" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
+  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" strokeWidth="1.25" /><path d="M9 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v5a1 1 0 001 1h2" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" /></svg>
 }
+
+function EditIcon() {
+  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 10.75V12h1.25l6.18-6.18-1.25-1.25L2 10.75Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" /><path d="M7.74 3.57 8.99 2.32a.88.88 0 0 1 1.24 0l1.45 1.45a.88.88 0 0 1 0 1.24l-1.25 1.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" /></svg>
+}
+
 function ChartIcon() {
-  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 12V7M5 12V4M8 12V7M11 12V2" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
+  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 12V7M5 12V4M8 12V7M11 12V2" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" /></svg>
 }
+
 function DuplicateIcon() {
-  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" strokeWidth="1.25"/><path d="M10 4V3a1 1 0 00-1-1H3a1 1 0 00-1 1v6a1 1 0 001 1h1" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/></svg>
+  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" strokeWidth="1.25" /><path d="M10 4V3a1 1 0 00-1-1H3a1 1 0 00-1 1v6a1 1 0 001 1h1" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" /></svg>
 }
+
+function ShareIcon() {
+  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M10.5 5a1.75 1.75 0 10-1.6-2.46L5.5 4.52a1.75 1.75 0 100 4.96l3.4 1.98A1.75 1.75 0 1010.5 9" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" /></svg>
+}
+
 function TrashIcon() {
-  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M5.5 7v4M8.5 7v4M3 4l.5 7.5a1 1 0 001 .5h5a1 1 0 001-.5L11 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/></svg>
+  return <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M5.5 7v4M8.5 7v4M3 4l.5 7.5a1 1 0 001 .5h5a1 1 0 001-.5L11 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" /></svg>
 }

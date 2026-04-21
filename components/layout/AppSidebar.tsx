@@ -21,7 +21,6 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: GridIcon },
   { href: '/create', label: 'Create QR', icon: PlusIcon },
   { href: '/bulk', label: 'Bulk Create', icon: LayersIcon },
-  { href: '/analytics', label: 'Analytics', icon: ChartIcon },
   { href: '/settings', label: 'Settings', icon: GearIcon },
 ]
 
@@ -166,9 +165,6 @@ function PlusIcon() {
 }
 function LayersIcon() {
   return <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 5l7-4 7 4-7 4-7-4zM1 11l7 4 7-4M1 8l7 4 7-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-}
-function ChartIcon() {
-  return <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 14V8M6 14V5M10 14V8M14 14V2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
 }
 function GearIcon() {
   return <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.53 11.53l1.42 1.42M3.05 12.95l1.42-1.42M11.53 4.47l1.42-1.42" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>

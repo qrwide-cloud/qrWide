@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: 'Free QR Code Generator with Analytics | QRWide',
   description:
-    'Create free QR codes that never expire. Dynamic QR codes, real-time analytics, custom designs. Used by 10,000+ restaurants, agents, and creators.',
+    'Create free QR codes that never expire. Dynamic QR codes, real-time analytics, custom designs, and multiple QR types.',
   alternates: { canonical: 'https://qrwide.com' },
   openGraph: { url: 'https://qrwide.com' },
 }
@@ -48,9 +48,9 @@ const NICHES = [
 ]
 
 const TESTIMONIALS = [
-  { body: 'Switched from QR Tiger and saved $300/year. Analytics are better, redirect speed is faster. No-brainer.', author: 'Marcus T.', role: 'Owner, Harvest Table Restaurant', initials: 'MT', color: '#F59E0B' },
-  { body: 'Put unique QR codes on 40 listings. Three of the top 5 most-scanned properties sold within 2 weeks. The data is genuinely useful.', author: 'Priya K.', role: 'Real Estate Agent, Austin TX', initials: 'PK', color: '#0057FF' },
-  { body: 'Generated 400 badge QR codes in under a minute for our conference. What would have taken an afternoon took 60 seconds.', author: 'Daniel M.', role: 'Events Director, TechSummit', initials: 'DM', color: '#8B5CF6' },
+  { body: 'Menus and signage are where dynamic QR codes earn their keep. Update the destination once and keep the printout in service.', author: 'Restaurants', role: 'Menus, tables, and window signage', initials: 'RE', color: '#F59E0B' },
+  { body: 'Property flyers, listing signs, and brochures work better when every QR code has its own analytics page and shareable shortlink.', author: 'Real Estate', role: 'Listing and campaign tracking', initials: 'RA', color: '#0057FF' },
+  { body: 'Events need bulk generation, simple downloads, and clean handoff files. QRWide is set up for that workflow out of the box.', author: 'Events', role: 'Badges, booth cards, and handouts', initials: 'EV', color: '#8B5CF6' },
 ]
 
 export default function HomePage() {
@@ -143,9 +143,9 @@ export default function HomePage() {
               {/* Social proof */}
               <div className="mt-10 flex gap-8 border-t border-[var(--border)] pt-8">
                 {[
-                  { value: '10,000+', label: 'businesses' },
-                  { value: '5M+', label: 'scans tracked' },
-                  { value: '<200ms', label: 'redirect speed' },
+                  { value: '15+', label: 'QR types' },
+                  { value: '500', label: 'bulk limit' },
+                  { value: 'Edge', label: 'redirect path' },
                 ].map((s) => (
                   <div key={s.label}>
                     <div className="text-[20px] font-bold tracking-tight text-[var(--text-primary)]">{s.value}</div>
@@ -481,10 +481,10 @@ export default function HomePage() {
           {/* Stats strip */}
           <div className="mb-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { value: '10,000+', label: 'active businesses', color: '#0057FF' },
-              { value: '5M+',     label: 'scans tracked',     color: '#00C896' },
-              { value: '<200ms',  label: 'redirect speed',    color: '#8B5CF6' },
-              { value: '15+',     label: 'QR code types',     color: '#F59E0B' },
+              { value: '15+',     label: 'QR code types',     color: '#0057FF' },
+              { value: '500',     label: 'bulk limit',        color: '#00C896' },
+              { value: '3',       label: 'free dynamic codes', color: '#8B5CF6' },
+              { value: 'Edge',    label: 'redirect path',     color: '#F59E0B' },
             ].map((s) => (
               <div key={s.label}
                 className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 text-center backdrop-blur-sm">

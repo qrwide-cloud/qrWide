@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { invalidateShortcode } from '@/lib/qr/track'
+import { deleteQRCode, updateQRCode } from '@/lib/db/queries'
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -20,26 +21,23 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const { data, error } = await supabase
-    .from('qr_codes')
-    .update({
-      updated_at: new Date().toISOString(),
-      ...(body.destination !== undefined && { destination: body.destination }),
-      ...(body.name !== undefined && { name: body.name }),
-      ...(body.is_active !== undefined && { is_active: body.is_active }),
-      ...(body.style !== undefined && { style: body.style }),
-      ...(body.folder !== undefined && { folder: body.folder }),
+  try {
+    const data = await updateQRCode(params.id, user.id, {
+      name: body.name,
+      destination: body.destination,
+      isActive: body.is_active,
+      style: body.style,
+      folder: body.folder,
+      tags: body.tags,
     })
-    .eq('id', params.id)
-    .select()
-    .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    // Invalidate Redis cache so redirect picks up new destination
+    await invalidateShortcode(existing.shortcode)
 
-  // Invalidate Redis cache so redirect picks up new destination
-  await invalidateShortcode(existing.shortcode)
-
-  return NextResponse.json({ success: true, updated_at: data.updated_at })
+    return NextResponse.json({ success: true, updated_at: data.updated_at })
+  } catch (error) {
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 })
+  }
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
@@ -57,8 +55,12 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  await supabase.from('qr_codes').delete().eq('id', params.id)
-  await invalidateShortcode(existing.shortcode)
+  try {
+    await deleteQRCode(params.id, user.id)
+    await invalidateShortcode(existing.shortcode)
 
-  return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 })
+  }
 }

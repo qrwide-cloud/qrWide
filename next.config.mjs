@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
+const defaultDistDir = process.env.NODE_ENV === 'development' ? '.next-dev' : '.next'
+
 const nextConfig = {
+  distDir: process.env.NEXT_DIST_DIR || defaultDistDir,
   eslint: {
     // Use our own ESLint config, Next.js 14 lint plugin is incompatible with ESLint 9
     ignoreDuringBuilds: true,

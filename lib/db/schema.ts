@@ -236,6 +236,23 @@ export interface Database {
       increment_qr_count: { Args: { user_id: string }; Returns: undefined }
       decrement_qr_count: { Args: { user_id: string }; Returns: undefined }
       increment_qr_scans: { Args: { qr_id: string }; Returns: undefined }
+      record_scan_event: {
+        Args: {
+          p_qr_id: string
+          p_country?: string | null
+          p_region?: string | null
+          p_city?: string | null
+          p_lat?: number | null
+          p_lng?: number | null
+          p_device_type?: string | null
+          p_os?: string | null
+          p_browser?: string | null
+          p_ip_hash?: string | null
+          p_referrer?: string | null
+          p_user_agent?: string | null
+        }
+        Returns: undefined
+      }
     }
     Enums: Record<string, never>
   }

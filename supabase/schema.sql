@@ -93,6 +93,7 @@ CREATE TABLE scan_events (
 
 CREATE INDEX idx_scan_events_qr_id ON scan_events(qr_id);
 CREATE INDEX idx_scan_events_scanned_at ON scan_events(scanned_at);
+CREATE INDEX idx_scan_events_qr_id_ip_hash ON scan_events(qr_id, ip_hash);
 
 -- ========================
 -- FOLDERS
@@ -138,6 +139,78 @@ RETURNS void AS $$
       last_scanned_at = NOW()
   WHERE id = qr_id;
 $$ LANGUAGE sql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION record_scan_event(
+  p_qr_id UUID,
+  p_country TEXT DEFAULT NULL,
+  p_region TEXT DEFAULT NULL,
+  p_city TEXT DEFAULT NULL,
+  p_lat FLOAT DEFAULT NULL,
+  p_lng FLOAT DEFAULT NULL,
+  p_device_type TEXT DEFAULT NULL,
+  p_os TEXT DEFAULT NULL,
+  p_browser TEXT DEFAULT NULL,
+  p_ip_hash TEXT DEFAULT NULL,
+  p_referrer TEXT DEFAULT NULL,
+  p_user_agent TEXT DEFAULT NULL
+)
+RETURNS void AS $$
+DECLARE
+  is_unique_scan BOOLEAN := false;
+  owner_id UUID;
+BEGIN
+  IF p_ip_hash IS NOT NULL THEN
+    SELECT NOT EXISTS (
+      SELECT 1
+      FROM scan_events
+      WHERE qr_id = p_qr_id
+        AND ip_hash = p_ip_hash
+    ) INTO is_unique_scan;
+  END IF;
+
+  INSERT INTO scan_events (
+    qr_id,
+    country,
+    region,
+    city,
+    lat,
+    lng,
+    device_type,
+    os,
+    browser,
+    ip_hash,
+    referrer,
+    user_agent
+  )
+  VALUES (
+    p_qr_id,
+    p_country,
+    p_region,
+    p_city,
+    p_lat,
+    p_lng,
+    p_device_type,
+    p_os,
+    p_browser,
+    p_ip_hash,
+    p_referrer,
+    p_user_agent
+  );
+
+  UPDATE qr_codes
+  SET total_scans = total_scans + 1,
+      unique_scans = unique_scans + CASE WHEN is_unique_scan THEN 1 ELSE 0 END,
+      last_scanned_at = NOW()
+  WHERE id = p_qr_id
+  RETURNING user_id INTO owner_id;
+
+  IF owner_id IS NOT NULL THEN
+    UPDATE profiles
+    SET scan_count_month = scan_count_month + 1
+    WHERE id = owner_id;
+  END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Reset monthly scan counts (run via pg_cron or Supabase cron)
 CREATE OR REPLACE FUNCTION reset_monthly_scan_counts()

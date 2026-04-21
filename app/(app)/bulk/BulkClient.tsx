@@ -35,11 +35,46 @@ export function BulkClient() {
   }
 
   function parseCSV(text: string): BulkRow[] {
-    const lines = text.trim().split('\n')
+    const lines = text
+      .trim()
+      .split(/\r?\n/)
+      .filter(Boolean)
     if (lines.length < 2) return []
-    const headers = lines[0].split(',').map((h) => h.trim().toLowerCase())
+    const parseLine = (line: string) => {
+      const values: string[] = []
+      let current = ''
+      let inQuotes = false
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]
+        const next = line[i + 1]
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            current += '"'
+            i++
+          } else {
+            inQuotes = !inQuotes
+          }
+          continue
+        }
+
+        if (char === ',' && !inQuotes) {
+          values.push(current.trim())
+          current = ''
+          continue
+        }
+
+        current += char
+      }
+
+      values.push(current.trim())
+      return values
+    }
+
+    const headers = parseLine(lines[0]).map((h) => h.trim().toLowerCase())
     return lines.slice(1).map((line) => {
-      const vals = line.split(',').map((v) => v.trim().replace(/^"|"$/g, ''))
+      const vals = parseLine(line).map((v) => v.replace(/^"|"$/g, ''))
       const row: Record<string, string> = {}
       headers.forEach((h, i) => { row[h] = vals[i] ?? '' })
       return {
@@ -113,6 +148,11 @@ export function BulkClient() {
           try {
             const data = JSON.parse(line.slice(6))
             if (data.progress) setProgress(data.progress)
+            if (data.error) {
+              toast(data.error, 'error')
+              setStep('preview')
+              return
+            }
             if (data.downloadUrl) {
               setDownloadUrl(data.downloadUrl)
               setStep('done')

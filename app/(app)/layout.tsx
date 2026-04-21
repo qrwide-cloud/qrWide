@@ -1,10 +1,18 @@
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { AppSidebar } from '@/components/layout/AppSidebar'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const pathname = headers().get('x-pathname') ?? ''
+  const publicAppPaths = new Set(['/create'])
+
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user && publicAppPaths.has(pathname)) {
+    return <>{children}</>
+  }
 
   if (!user) redirect('/login')
 

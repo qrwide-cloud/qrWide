@@ -31,7 +31,7 @@ export function Footer() {
                 { href: '/features', label: 'Features' },
                 { href: '/pricing', label: 'Pricing' },
                 { href: '/create', label: 'Create QR Code' },
-                { href: '/bulk', label: 'Bulk Generator' },
+                { href: '/signup?redirectTo=%2Fbulk', label: 'Bulk Generator' },
                 { href: '/changelog', label: 'Changelog' },
               ].map(({ href, label }) => (
                 <li key={href}>

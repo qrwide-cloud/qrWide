@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/Toast'
 import { buildQRContent } from '@/lib/qr/generate'
 import { QR_TYPES, FREE_TYPES, PLAN_LABELS, PLAN_COLORS, type QRTypeConfig } from '@/lib/qr/types'
 import type { QRType, QRStyle } from '@/lib/db/schema'
+import { getPlanLimits } from '@/lib/plans'
 import { Lock, ArrowRight, Sparkles } from 'lucide-react'
 
 const DOT_STYLES = [
@@ -48,6 +49,7 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { toast } = useToast()
   const router = useRouter()
+  const planLimits = getPlanLimits(userPlan)
 
   // Restore from localStorage
   useEffect(() => {
@@ -112,7 +114,7 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
           isDynamic: true,
         }),
       })
-      if (res.status === 401) { router.push('/login?redirectTo=/create'); return }
+      if (res.status === 401) { router.push('/signup?redirectTo=/create'); return }
       if (!res.ok) { const b = await res.json(); toast(b.error ?? 'Failed to save', 'error'); return }
       const { id } = await res.json()
       localStorage.removeItem('create_qr_data')
@@ -412,7 +414,12 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
               {!isLocked && debouncedContent && (
                 <>
                   <div className="w-full">
-                    <QRDownload content={debouncedContent} style={style} filename={name || 'qrcode'} showPdf />
+                    <QRDownload
+                      content={debouncedContent}
+                      style={style}
+                      filename={name || 'qrcode'}
+                      showPdf={planLimits.pdfDownload}
+                    />
                   </div>
                   <button
                     onClick={() => setTestModalOpen(true)}

@@ -13,12 +13,20 @@ type Profile = Database['public']['Tables']['profiles']['Row']
 interface SettingsClientProps {
   profile: Profile | null
   userEmail: string
+  intentPlan?: 'pro' | 'business'
+  intentBillingCycle?: 'monthly' | 'yearly'
 }
 
-export function SettingsClient({ profile, userEmail }: SettingsClientProps) {
+export function SettingsClient({
+  profile,
+  userEmail,
+  intentPlan = 'pro',
+  intentBillingCycle = 'monthly',
+}: SettingsClientProps) {
   const [name, setName] = useState(profile?.name ?? '')
   const [saving, setSaving] = useState(false)
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>(intentBillingCycle)
   const { toast } = useToast()
   const supabase = createClient()
 
@@ -49,10 +57,11 @@ export function SettingsClient({ profile, userEmail }: SettingsClientProps) {
     const res = await fetch('/api/stripe/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, billingCycle: 'monthly' }),
+      body: JSON.stringify({ plan, billingCycle }),
     })
-    const { checkoutUrl } = await res.json()
+    const { checkoutUrl, error } = await res.json()
     if (checkoutUrl) window.location.href = checkoutUrl
+    else if (error) toast(error, 'error')
   }
 
   return (
@@ -60,7 +69,6 @@ export function SettingsClient({ profile, userEmail }: SettingsClientProps) {
       <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-8">Settings</h1>
 
       <div className="space-y-6">
-        {/* Profile */}
         <Card className="p-6">
           <h2 className="text-base font-semibold text-[var(--text-primary)] mb-4">Profile</h2>
           <div className="space-y-4">
@@ -80,7 +88,6 @@ export function SettingsClient({ profile, userEmail }: SettingsClientProps) {
           </div>
         </Card>
 
-        {/* Appearance */}
         <Card className="p-6">
           <h2 className="text-base font-semibold text-[var(--text-primary)] mb-4">Appearance</h2>
           <div className="flex gap-2">
@@ -101,7 +108,6 @@ export function SettingsClient({ profile, userEmail }: SettingsClientProps) {
           </div>
         </Card>
 
-        {/* Plan */}
         <Card className="p-6">
           <h2 className="text-base font-semibold text-[var(--text-primary)] mb-1">Current plan</h2>
           <div className="flex items-center gap-3 mb-4">
@@ -115,22 +121,50 @@ export function SettingsClient({ profile, userEmail }: SettingsClientProps) {
             )}
           </div>
           {profile?.plan === 'free' && (
-            <div className="flex flex-wrap gap-2">
-              <Button size="sm" onClick={() => handleUpgrade('pro')}>Upgrade to Pro — $5/mo</Button>
-              <Button size="sm" variant="secondary" onClick={() => handleUpgrade('business')}>Upgrade to Business — $9/mo</Button>
+            <div className="space-y-4">
+              <div className="inline-flex rounded-[10px] border border-[var(--border)] p-1">
+                {(['monthly', 'yearly'] as const).map((cycle) => (
+                  <button
+                    key={cycle}
+                    onClick={() => setBillingCycle(cycle)}
+                    className={[
+                      'rounded-[8px] px-3 py-1.5 text-sm transition-all',
+                      billingCycle === cycle
+                        ? 'bg-[#0066FF] text-white'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
+                    ].join(' ')}
+                  >
+                    {cycle === 'monthly' ? 'Monthly' : 'Yearly'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => handleUpgrade('pro')}
+                  className={intentPlan === 'pro' ? 'ring-2 ring-[#0066FF]/20' : undefined}
+                >
+                  Upgrade to Pro {billingCycle === 'monthly' ? '- $5/mo' : '- $49/yr'}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => handleUpgrade('business')}
+                  className={intentPlan === 'business' ? 'ring-2 ring-[#0066FF]/20' : undefined}
+                >
+                  Upgrade to Business {billingCycle === 'monthly' ? '- $9/mo' : '- $89/yr'}
+                </Button>
+              </div>
             </div>
           )}
           {profile?.plan !== 'free' && (
             <p className="text-sm text-[var(--text-secondary)]">
-              Manage your subscription at{' '}
-              <a href="https://billing.stripe.com" target="_blank" rel="noopener noreferrer" className="text-[#0066FF] hover:underline">
-                billing.stripe.com
-              </a>
+              Manage your subscription in Stripe using the customer portal you configure for production.
             </p>
           )}
         </Card>
 
-        {/* Danger zone */}
         <Card className="p-6 border-[#EF4444]/30">
           <h2 className="text-base font-semibold text-[#EF4444] mb-4">Danger zone</h2>
           <p className="text-sm text-[var(--text-secondary)] mb-4">
@@ -141,7 +175,7 @@ export function SettingsClient({ profile, userEmail }: SettingsClientProps) {
             size="sm"
             onClick={() => {
               if (confirm('Are you absolutely sure? This will delete all your QR codes and data permanently.')) {
-                toast('Contact support@qrwide.com to complete account deletion.', 'info')
+                toast('Account deletion is not wired yet. Add a server route before launch.', 'info')
               }
             }}
           >
