@@ -34,28 +34,30 @@ export default function Image() {
         }} />
 
         {/* Logo + wordmark */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 40 }}>
-          {/* W mark — 4 finder-pattern squares forming a W */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 40 }}>
+          {/* QR mark — finder patterns */}
           <div style={{
-            width: 108, height: 74,
-            background: 'linear-gradient(90deg, #0057FF 0%, #0099CC 50%, #00C896 100%)',
-            borderRadius: 16,
+            width: 72, height: 72,
+            background: 'linear-gradient(135deg, #0057FF 0%, #003FCC 100%)',
+            borderRadius: '30%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           }}>
-            <svg width={96} height={66} viewBox="0 0 44 30" fill="none">
-              {/* A — top-left peak */}
-              <rect x="1"  y="1"  width="9" height="9" rx="2.5" fill="white" />
-              <rect x="3.25" y="3.25" width="4.5" height="4.5" rx="1.2" fill="rgba(0,87,255,0.65)" />
-              {/* B — lower-left valley */}
-              <rect x="12" y="16" width="9" height="9" rx="2.5" fill="white" />
-              <rect x="14.25" y="18.25" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.4)" />
-              {/* C — lower-right valley */}
-              <rect x="23" y="16" width="9" height="9" rx="2.5" fill="white" />
-              <rect x="25.25" y="18.25" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.4)" />
-              {/* D — top-right peak */}
-              <rect x="34" y="1"  width="9" height="9" rx="2.5" fill="white" />
-              <rect x="36.25" y="3.25" width="4.5" height="4.5" rx="1.2" fill="rgba(0,200,150,0.65)" />
+            <svg width={52} height={52} viewBox="0 0 52 52" fill="none">
+              {/* top-left finder */}
+              <rect x={4} y={4} width={20} height={20} rx={4} fill="white" />
+              <rect x={9} y={9} width={10} height={10} rx={2} fill="#0057FF" />
+              {/* top-right finder */}
+              <rect x={28} y={4} width={20} height={20} rx={4} fill="white" />
+              <rect x={33} y={9} width={10} height={10} rx={2} fill="#0057FF" />
+              {/* bottom-left finder */}
+              <rect x={4} y={28} width={20} height={20} rx={4} fill="white" />
+              <rect x={9} y={33} width={10} height={10} rx={2} fill="#0057FF" />
+              {/* bottom-right data dots */}
+              <rect x={28} y={28} width={9} height={9} rx={2} fill="white" opacity="0.9" />
+              <rect x={39} y={28} width={9} height={9} rx={2} fill="#00C896" />
+              <rect x={28} y={39} width={9} height={9} rx={2} fill="#00C896" />
+              <rect x={39} y={39} width={9} height={9} rx={2} fill="white" opacity="0.9" />
             </svg>
           </div>
           <span style={{ fontSize: 52, fontWeight: 800, color: 'white', letterSpacing: '-0.03em' }}>

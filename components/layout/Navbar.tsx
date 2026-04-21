@@ -257,48 +257,43 @@ export function Navbar({ user }: NavbarProps) {
 }
 
 /**
- * QRWide brand mark — four QR finder-pattern squares arranged as a "W".
- * The shape spells the brand, reads as QR technology, and the left→right
- * gradient reinforces "going Wide". Aspect ratio ~1.47:1 (wider than tall).
- *
- * Fixed viewBox 44×30. Each finder square is 9×9 with a 4.5×4.5 inner dot.
- *   A (top-left peak):       x=1,  y=1
- *   B (lower-left valley):   x=12, y=16
- *   C (lower-right valley):  x=23, y=16
- *   D (top-right peak):      x=34, y=1
+ * QR finder-pattern brand mark.
  */
-export function QRMark({ size = 30 }: { size?: number }) {
-  const h = size
-  const w = Math.round(h * 1.47)
+export function QRMark({ size = 32 }: { size?: number }) {
+  const s = size
+  const pad = Math.round(s * 0.083)
+  const gap = Math.round(s * 0.055)
+  const cell = Math.round((s - 2 * pad - gap) / 2)
+  const inner = Math.round(cell * 0.5)
+  const innerOffset = Math.round((cell - inner) / 2)
+  const rx = Math.round(cell * 0.18)
+  const rxInner = Math.round(inner * 0.25)
+  const mod = Math.round((cell - gap) / 2)
+  const rxMod = Math.round(mod * 0.28)
+
+  const x0 = pad,             y0 = pad
+  const x1 = pad + cell + gap, y1 = pad
+  const x2 = pad,              y2 = pad + cell + gap
+  const x3 = pad + cell + gap, y3 = pad + cell + gap
 
   return (
     <div
-      className="qrmark shrink-0 relative overflow-hidden"
-      style={{
-        width: w, height: h,
-        background: 'linear-gradient(90deg, #0057FF 0%, #0099CC 50%, #00C896 100%)',
-        borderRadius: Math.round(h * 0.22),
-      }}
+      className="qrmark shrink-0 rounded-[30%] overflow-hidden relative"
+      style={{ width: s, height: s, background: 'linear-gradient(135deg, #0057FF 0%, #003FCC 100%)' }}
     >
-      <svg width={w} height={h} viewBox="0 0 44 30" fill="none" preserveAspectRatio="xMidYMid meet">
-        {/* A — top-left peak */}
-        <rect x="1"  y="1"  width="9" height="9" rx="2.5" fill="white" />
-        <rect x="3.25" y="3.25" width="4.5" height="4.5" rx="1.2" fill="rgba(0,87,255,0.65)" />
-
-        {/* B — lower-left valley */}
-        <rect x="12" y="16" width="9" height="9" rx="2.5" fill="white" />
-        <rect x="14.25" y="18.25" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.45)" />
-
-        {/* C — lower-right valley */}
-        <rect x="23" y="16" width="9" height="9" rx="2.5" fill="white" />
-        <rect x="25.25" y="18.25" width="4.5" height="4.5" rx="1.2" fill="rgba(255,255,255,0.45)" />
-
-        {/* D — top-right peak */}
-        <rect x="34" y="1"  width="9" height="9" rx="2.5" fill="white" />
-        <rect x="36.25" y="3.25" width="4.5" height="4.5" rx="1.2" fill="rgba(0,200,150,0.65)" />
+      <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} fill="none">
+        <rect x={x0} y={y0} width={cell} height={cell} rx={rx} fill="white" />
+        <rect x={x0 + innerOffset} y={y0 + innerOffset} width={inner} height={inner} rx={rxInner} fill="#0057FF" />
+        <rect x={x1} y={y1} width={cell} height={cell} rx={rx} fill="white" />
+        <rect x={x1 + innerOffset} y={y1 + innerOffset} width={inner} height={inner} rx={rxInner} fill="#0057FF" />
+        <rect x={x2} y={y2} width={cell} height={cell} rx={rx} fill="white" />
+        <rect x={x2 + innerOffset} y={y2 + innerOffset} width={inner} height={inner} rx={rxInner} fill="#0057FF" />
+        <rect x={x3} y={y3} width={mod} height={mod} rx={rxMod} fill="white" opacity="0.9" />
+        <rect x={x3 + mod + gap} y={y3} width={mod} height={mod} rx={rxMod} fill="#00C896" />
+        <rect x={x3} y={y3 + mod + gap} width={mod} height={mod} rx={rxMod} fill="#00C896" />
+        <rect x={x3 + mod + gap} y={y3 + mod + gap} width={mod} height={mod} rx={rxMod} fill="white" opacity="0.9" />
       </svg>
-
-      {/* Horizontal scan beam — sweeps left→right like a wide scanner */}
+      {/* scan-line sweep */}
       <div className="qrmark-scan" />
     </div>
   )
