@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 40" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0057FF"/>
+      <stop offset="100%" stop-color="#003FCC"/>
+    </linearGradient>
+  </defs>
+
+  <!-- QR mark background -->
+  <rect width="40" height="40" rx="12" fill="url(#bg)"/>
+
+  <!-- Top-left finder -->
+  <rect x="4" y="4" width="14" height="14" rx="3" fill="white"/>
+  <rect x="7.5" y="7.5" width="7" height="7" rx="1.5" fill="#0057FF"/>
+
+  <!-- Top-right finder -->
+  <rect x="22" y="4" width="14" height="14" rx="3" fill="white"/>
+  <rect x="25.5" y="7.5" width="7" height="7" rx="1.5" fill="#0057FF"/>
+
+  <!-- Bottom-left finder -->
+  <rect x="4" y="22" width="14" height="14" rx="3" fill="white"/>
+  <rect x="7.5" y="25.5" width="7" height="7" rx="1.5" fill="#0057FF"/>
+
+  <!-- Bottom-right data dots -->
+  <rect x="22" y="22" width="6" height="6" rx="1.5" fill="white" opacity="0.9"/>
+  <rect x="30" y="22" width="6" height="6" rx="1.5" fill="#00C896"/>
+  <rect x="22" y="30" width="6" height="6" rx="1.5" fill="#00C896"/>
+  <rect x="30" y="30" width="6" height="6" rx="1.5" fill="white" opacity="0.9"/>
+
+  <!-- Wordmark -->
+  <text x="50" y="28" font-family="system-ui,-apple-system,sans-serif" font-size="22" font-weight="800" letter-spacing="-0.5" fill="#0d1117">QRWide</text>
+</svg>

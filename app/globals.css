@@ -196,3 +196,20 @@ a:focus-visible {
 * {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ── QRMark scan-line animation ── */
+@keyframes qrScan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(200%); opacity: 0; }
+}
+.qrmark-scan {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 35%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0,200,150,0.35) 50%, transparent 100%);
+  animation: qrScan 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  pointer-events: none;
+}

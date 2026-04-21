@@ -278,7 +278,7 @@ export function QRMark({ size = 32 }: { size?: number }) {
 
   return (
     <div
-      className="shrink-0 rounded-[30%] overflow-hidden"
+      className="qrmark shrink-0 rounded-[30%] overflow-hidden relative"
       style={{ width: s, height: s, background: 'linear-gradient(135deg, #0057FF 0%, #003FCC 100%)' }}
     >
       <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} fill="none">
@@ -293,6 +293,8 @@ export function QRMark({ size = 32 }: { size?: number }) {
         <rect x={x3} y={y3 + mod + gap} width={mod} height={mod} rx={rxMod} fill="#00C896" />
         <rect x={x3 + mod + gap} y={y3 + mod + gap} width={mod} height={mod} rx={rxMod} fill="white" opacity="0.9" />
       </svg>
+      {/* scan-line sweep */}
+      <div className="qrmark-scan" />
     </div>
   )
 }
