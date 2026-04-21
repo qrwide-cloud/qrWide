@@ -161,3 +161,38 @@ body {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+
+/* ── Scrollbar hide ── */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Smooth details/summary open transition ── */
+details summary::-webkit-details-marker { display: none; }
+
+/* ── Focus ring default override (accessibility) ── */
+:focus-visible {
+  outline: 2px solid #0057FF;
+  outline-offset: 2px;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #0057FF;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Selection color ── */
+::selection {
+  background: rgba(0, 87, 255, 0.15);
+  color: var(--text-primary);
+}
+
+/* ── Tap highlight removal on mobile ── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}

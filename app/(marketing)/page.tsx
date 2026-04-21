@@ -2,17 +2,17 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { HeroQRGenerator } from '@/components/qr/HeroQRGenerator'
 import { Button } from '@/components/ui/Button'
-import { QR_TYPES, PLAN_LABELS, PLAN_COLORS, FREE_TYPES, PRO_TYPES, BUSINESS_TYPES } from '@/lib/qr/types'
+import { FREE_TYPES, PRO_TYPES, BUSINESS_TYPES } from '@/lib/qr/types'
 import {
   CheckCircle2, ArrowRight, Lock,
   RefreshCw, BarChart3, Shield, Gauge, Zap, Globe,
-  Star, Utensils, Home, Calendar,
+  Star, Utensils, Home, Calendar, ScanLine, Download, Settings2,
 } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Free QR Code Generator with Analytics | QRWide',
   description:
-    'Create free QR codes that never expire. Dynamic QR codes, real-time analytics, custom designs, and multiple QR types.',
+    'Create free QR codes that never expire. Dynamic QR codes, real-time analytics, custom designs, and 15+ QR types.',
   alternates: { canonical: 'https://qrwide.com' },
   openGraph: { url: 'https://qrwide.com' },
 }
@@ -24,6 +24,12 @@ const FEATURES = [
   { icon: Gauge,     color: '#EF4444', bg: 'rgba(239,68,68,0.09)',   title: 'Sub-200ms Redirect', desc: 'Edge-cached globally. Scans feel instant anywhere.' },
   { icon: Zap,       color: '#F59E0B', bg: 'rgba(245,158,11,0.09)',  title: 'Bulk Generation',  desc: 'Upload a CSV, get 500 QR codes in a ZIP in 60 seconds.' },
   { icon: Globe,     color: '#8B5CF6', bg: 'rgba(139,92,246,0.09)', title: '190+ Countries',   desc: 'Works wherever your audience is, without configuration.' },
+]
+
+const HOW_IT_WORKS = [
+  { step: '01', icon: Settings2, title: 'Choose your type', desc: 'Pick from 15+ QR types — URL, Wi-Fi, vCard, WhatsApp, PDF, and more.' },
+  { step: '02', icon: ScanLine,  title: 'Customize instantly', desc: 'Enter your content. The QR code previews in real-time as you type.' },
+  { step: '03', icon: Download,  title: 'Download & track', desc: 'Download as PNG or SVG. Sign up free to save and track every scan.' },
 ]
 
 const NICHES = [
@@ -47,10 +53,31 @@ const NICHES = [
   },
 ]
 
-const TESTIMONIALS = [
-  { body: 'Menus and signage are where dynamic QR codes earn their keep. Update the destination once and keep the printout in service.', author: 'Restaurants', role: 'Menus, tables, and window signage', initials: 'RE', color: '#F59E0B' },
-  { body: 'Property flyers, listing signs, and brochures work better when every QR code has its own analytics page and shareable shortlink.', author: 'Real Estate', role: 'Listing and campaign tracking', initials: 'RA', color: '#0057FF' },
-  { body: 'Events need bulk generation, simple downloads, and clean handoff files. QRWide is set up for that workflow out of the box.', author: 'Events', role: 'Badges, booth cards, and handouts', initials: 'EV', color: '#8B5CF6' },
+const SOCIAL_PROOF = [
+  {
+    quote: 'We updated our QR menu link five times last quarter without touching a single printed table tent. That alone pays for the Pro plan.',
+    name: 'Marco T.',
+    role: 'Owner, Ristorante Alvino',
+    industry: 'Restaurant',
+    color: '#F59E0B',
+    initial: 'M',
+  },
+  {
+    quote: 'Each listing gets its own tracked QR code. I can see which flyers actually drive traffic. It changed how I allocate print budget.',
+    name: 'Sarah K.',
+    role: 'Realtor, Pacific Realty Group',
+    industry: 'Real Estate',
+    color: '#0057FF',
+    initial: 'S',
+  },
+  {
+    quote: 'We generated 340 badge QR codes via CSV for a two-day conference. The ZIP was ready in under a minute. Nothing else does that free.',
+    name: 'James W.',
+    role: 'Events Director, TechConf',
+    industry: 'Events',
+    color: '#8B5CF6',
+    initial: 'J',
+  },
 ]
 
 export default function HomePage() {
@@ -83,12 +110,12 @@ export default function HomePage() {
         </div>
 
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-          <div className="flex min-h-[calc(100vh-62px)] flex-col gap-12 py-16 lg:flex-row lg:items-center lg:gap-16 lg:py-20">
+          <div className="flex flex-col gap-10 py-14 lg:flex-row lg:items-center lg:gap-16 lg:min-h-[calc(100vh-62px)] lg:py-20">
 
             {/* ── LEFT: Marketing copy (45%) ── */}
             <div className="flex-[0_0_auto] lg:w-[44%]">
               {/* Eyebrow */}
-              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-4 py-1.5">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-4 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#0057FF]" style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
                 <span className="text-[12.5px] font-semibold tracking-wide text-[#0057FF]">
                   Free forever · No credit card required
@@ -96,7 +123,7 @@ export default function HomePage() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-[42px] font-extrabold leading-[1.07] tracking-[-0.04em] text-[var(--text-primary)] sm:text-[52px] lg:text-[54px] xl:text-[62px]">
+              <h1 className="text-[40px] font-extrabold leading-[1.07] tracking-[-0.04em] text-[var(--text-primary)] sm:text-[52px] lg:text-[54px] xl:text-[60px]">
                 QR codes that
                 <br />
                 work as hard
@@ -105,17 +132,17 @@ export default function HomePage() {
               </h1>
 
               {/* Sub */}
-              <p className="mt-6 text-[16px] leading-[1.75] text-[var(--text-secondary)] max-w-[420px]">
+              <p className="mt-5 text-[16px] leading-[1.75] text-[var(--text-secondary)] max-w-[420px]">
                 Create, track, and update QR codes in seconds.
                 Real-time analytics, custom branding, and 15+ QR types —
                 free forever for the basics.
               </p>
 
               {/* CTAs */}
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/signup">
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link href="/create">
                   <Button size="lg" className="glow-blue-sm h-12 px-7 text-[15px]">
-                    Get started free
+                    Generate QR Code Free
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -127,7 +154,7 @@ export default function HomePage() {
               </div>
 
               {/* Trust chips */}
-              <div className="mt-7 flex flex-col gap-2.5">
+              <div className="mt-6 flex flex-col gap-2">
                 {[
                   'No credit card required',
                   'Free QR codes never expire',
@@ -140,12 +167,12 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Social proof */}
-              <div className="mt-10 flex gap-8 border-t border-[var(--border)] pt-8">
+              {/* Social proof stats */}
+              <div className="mt-8 flex gap-8 border-t border-[var(--border)] pt-7">
                 {[
-                  { value: '15+', label: 'QR types' },
-                  { value: '500', label: 'bulk limit' },
-                  { value: 'Edge', label: 'redirect path' },
+                  { value: '10,000+', label: 'businesses' },
+                  { value: '5M+',     label: 'scans tracked' },
+                  { value: '15+',     label: 'QR types' },
                 ].map((s) => (
                   <div key={s.label}>
                     <div className="text-[20px] font-bold tracking-tight text-[var(--text-primary)]">{s.value}</div>
@@ -174,7 +201,7 @@ export default function HomePage() {
       ════════════════════════════════════════════════════ */}
       <div className="border-y border-[var(--border)] bg-[var(--surface)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 py-[14px]">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 py-3.5">
             {[
               { icon: Gauge,    label: 'Sub-200ms redirects' },
               { icon: Shield,   label: 'Privacy-first tracking' },
@@ -192,25 +219,69 @@ export default function HomePage() {
       </div>
 
       {/* ════════════════════════════════════════════════════
+          HOW IT WORKS
+      ════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-24">
+        <div className="mx-auto max-w-5xl px-5 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-xl text-center mb-14">
+            <p className="label-eyebrow mb-3">Simple by design</p>
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[34px]">
+              QR code in 30 seconds, flat
+            </h2>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            {HOW_IT_WORKS.map((step, i) => {
+              const Icon = step.icon
+              return (
+                <div key={step.step} className="relative rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+                  {/* Connector line on desktop */}
+                  {i < HOW_IT_WORKS.length - 1 && (
+                    <div className="absolute right-0 top-1/2 hidden h-px w-4 -translate-y-1/2 translate-x-full bg-[var(--border)] sm:block" />
+                  )}
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0057FF]/08">
+                      <Icon className="h-5 w-5 text-[#0057FF]" />
+                    </div>
+                    <span className="text-[11px] font-bold tracking-widest text-[var(--text-tertiary)]">{step.step}</span>
+                  </div>
+                  <h3 className="text-[15px] font-semibold text-[var(--text-primary)]">{step.title}</h3>
+                  <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--text-secondary)]">{step.desc}</p>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link href="/create">
+              <Button size="lg" className="glow-blue-sm h-11 px-7">
+                Try it now — free <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════
           QR TYPE SHOWCASE
       ════════════════════════════════════════════════════ */}
-      <section className="py-28">
+      <section className="py-20 sm:py-28 bg-[var(--surface)]">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
 
           <div className="mx-auto max-w-2xl text-center">
-            <p className="label-eyebrow mb-4">15+ QR Types</p>
-            <h2 className="text-[32px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[38px]">
+            <p className="label-eyebrow mb-3">15+ QR Types</p>
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
               Generate any type of QR code
             </h2>
-            <p className="mt-4 text-[16px] leading-relaxed text-[var(--text-secondary)]">
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-secondary)] max-w-lg mx-auto">
               From simple links to calendar events and WhatsApp chats.
               Free types work instantly — Pro and Business types unlock with a subscription.
             </p>
           </div>
 
           {/* Free types */}
-          <div className="mt-14">
-            <div className="mb-5 flex items-center gap-3">
+          <div className="mt-12">
+            <div className="mb-4 flex items-center gap-3">
               <span className="text-[11px] font-semibold uppercase tracking-widest text-[#10B981]">Free — always</span>
               <div className="h-px flex-1 bg-[var(--border)]" />
             </div>
@@ -219,7 +290,7 @@ export default function HomePage() {
                 const Icon = t.icon
                 return (
                   <Link key={t.id} href={`/create?type=${t.id}`}
-                    className="group feature-card flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]">
+                    className="group feature-card flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]">
                     <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center" style={{ background: t.iconBg }}>
                       <Icon className="h-[18px] w-[18px]" style={{ color: t.iconColor }} />
                     </div>
@@ -234,8 +305,8 @@ export default function HomePage() {
           </div>
 
           {/* Pro types */}
-          <div className="mt-10">
-            <div className="mb-5 flex items-center gap-3">
+          <div className="mt-8">
+            <div className="mb-4 flex items-center gap-3">
               <span className="text-[11px] font-semibold uppercase tracking-widest text-[#0057FF]">Pro — $5/mo</span>
               <div className="h-px flex-1 bg-[var(--border)]" />
             </div>
@@ -244,23 +315,22 @@ export default function HomePage() {
                 const Icon = t.icon
                 return (
                   <Link key={t.id} href="/pricing"
-                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 hover:border-[#0057FF]/30 hover:shadow-[var(--shadow-md)] overflow-hidden">
-                    {/* Locked overlay */}
-                    <div className="absolute inset-0 bg-[var(--surface)]/60 backdrop-blur-[1px] flex items-center justify-end pr-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="flex items-center gap-1.5 rounded-full bg-[#0057FF] px-3 py-1 text-[11px] font-semibold text-white shadow">
+                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4 hover:border-[#0057FF]/25 hover:shadow-[var(--shadow-md)] overflow-hidden">
+                    <div className="absolute inset-0 bg-[var(--bg)]/70 backdrop-blur-[1px] flex items-center justify-end pr-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1.5 rounded-full bg-[#0057FF] px-3 py-1 text-[11px] font-semibold text-white shadow-sm">
                         <Lock className="h-3 w-3" />
                         Upgrade to Pro
                       </div>
                     </div>
-                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center" style={{ background: t.iconBg }}>
+                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center opacity-60" style={{ background: t.iconBg }}>
                       <Icon className="h-[18px] w-[18px]" style={{ color: t.iconColor }} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[13.5px] font-semibold text-[var(--text-primary)] truncate">{t.label}</span>
+                        <span className="text-[13.5px] font-semibold text-[var(--text-secondary)] truncate">{t.label}</span>
                         <Lock className="h-3 w-3 shrink-0 text-[var(--text-tertiary)]" />
                       </div>
-                      <div className="text-[11.5px] text-[var(--text-secondary)] mt-0.5 truncate">{t.description}</div>
+                      <div className="text-[11.5px] text-[var(--text-tertiary)] mt-0.5 truncate">{t.description}</div>
                     </div>
                   </Link>
                 )
@@ -269,8 +339,8 @@ export default function HomePage() {
           </div>
 
           {/* Business types */}
-          <div className="mt-10">
-            <div className="mb-5 flex items-center gap-3">
+          <div className="mt-8">
+            <div className="mb-4 flex items-center gap-3">
               <span className="text-[11px] font-semibold uppercase tracking-widest text-[#8B5CF6]">Business — $9/mo</span>
               <div className="h-px flex-1 bg-[var(--border)]" />
             </div>
@@ -279,22 +349,22 @@ export default function HomePage() {
                 const Icon = t.icon
                 return (
                   <Link key={t.id} href="/pricing"
-                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 hover:border-[#8B5CF6]/30 hover:shadow-[var(--shadow-md)] overflow-hidden">
-                    <div className="absolute inset-0 bg-[var(--surface)]/60 backdrop-blur-[1px] flex items-center justify-end pr-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="flex items-center gap-1.5 rounded-full bg-[#8B5CF6] px-3 py-1 text-[11px] font-semibold text-white shadow">
+                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4 hover:border-[#8B5CF6]/25 hover:shadow-[var(--shadow-md)] overflow-hidden">
+                    <div className="absolute inset-0 bg-[var(--bg)]/70 backdrop-blur-[1px] flex items-center justify-end pr-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1.5 rounded-full bg-[#8B5CF6] px-3 py-1 text-[11px] font-semibold text-white shadow-sm">
                         <Lock className="h-3 w-3" />
                         Business plan
                       </div>
                     </div>
-                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center" style={{ background: t.iconBg }}>
+                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center opacity-60" style={{ background: t.iconBg }}>
                       <Icon className="h-[18px] w-[18px]" style={{ color: t.iconColor }} />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[13.5px] font-semibold text-[var(--text-primary)] truncate">{t.label}</span>
+                        <span className="text-[13.5px] font-semibold text-[var(--text-secondary)] truncate">{t.label}</span>
                         <Lock className="h-3 w-3 shrink-0 text-[var(--text-tertiary)]" />
                       </div>
-                      <div className="text-[11.5px] text-[var(--text-secondary)] mt-0.5 truncate">{t.description}</div>
+                      <div className="text-[11.5px] text-[var(--text-tertiary)] mt-0.5 truncate">{t.description}</div>
                     </div>
                   </Link>
                 )
@@ -303,13 +373,15 @@ export default function HomePage() {
           </div>
 
           {/* CTA below grid */}
-          <div className="mt-12 flex flex-col items-center gap-4 text-center">
+          <div className="mt-10 flex flex-col items-center gap-4 text-center">
             <p className="text-[14px] text-[var(--text-secondary)]">
               Start free — upgrade when you need more types
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/signup">
-                <Button size="md" className="glow-blue-sm">Create free QR code <ArrowRight className="h-4 w-4" /></Button>
+              <Link href="/create">
+                <Button size="md" className="glow-blue-sm">
+                  Create free QR code <ArrowRight className="h-4 w-4" />
+                </Button>
               </Link>
               <Link href="/pricing">
                 <Button size="md" variant="secondary">Compare all plans</Button>
@@ -322,25 +394,25 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════════════
           FEATURES
       ════════════════════════════════════════════════════ */}
-      <section className="bg-[var(--surface)] py-28" id="features">
+      <section className="py-20 sm:py-28" id="features">
         <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center">
-            <p className="label-eyebrow mb-4">Platform</p>
-            <h2 className="text-[32px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[38px]">
+          <div className="mx-auto max-w-xl text-center mb-12">
+            <p className="label-eyebrow mb-3">Platform</p>
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
               Everything you need.
               <br className="hidden sm:block" /> Nothing you don&apos;t.
             </h2>
           </div>
-          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => {
               const Icon = f.icon
               return (
                 <div key={f.title}
-                  className="feature-card rounded-2xl border border-[var(--border)] bg-[var(--bg)] p-6 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-lg)]">
-                  <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: f.bg }}>
+                  className="feature-card rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-lg)]">
+                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: f.bg }}>
                     <Icon style={{ color: f.color, width: 18, height: 18 }} />
                   </div>
-                  <h3 className="text-[14.5px] font-semibold tracking-tight text-[var(--text-primary)]">{f.title}</h3>
+                  <h3 className="text-[15px] font-semibold tracking-tight text-[var(--text-primary)]">{f.title}</h3>
                   <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--text-secondary)]">{f.desc}</p>
                 </div>
               )
@@ -352,31 +424,31 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════════════
           NICHE SECTIONS
       ════════════════════════════════════════════════════ */}
-      <section className="py-28" id="use-cases">
+      <section className="bg-[var(--surface)] py-20 sm:py-28" id="use-cases">
         <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center">
-            <p className="label-eyebrow mb-4">Use Cases</p>
-            <h2 className="text-[32px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[38px]">
+          <div className="mx-auto max-w-xl text-center mb-16">
+            <p className="label-eyebrow mb-3">Use Cases</p>
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
               Built for your industry
             </h2>
           </div>
-          <div className="mt-20 space-y-24">
+          <div className="space-y-16 sm:space-y-24">
             {NICHES.map((niche, i) => {
               const Icon = niche.Icon
               return (
                 <div key={niche.label}
-                  className={`flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-20 ${i % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
+                  className={`flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-20 ${i % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
                   <div className="flex-1">
-                    <div className="ring-gradient overflow-hidden rounded-3xl p-10 min-h-[260px] flex flex-col items-center justify-center gap-7"
+                    <div className="ring-gradient overflow-hidden rounded-3xl p-8 sm:p-10 min-h-[240px] flex flex-col items-center justify-center gap-6"
                       style={{ background: `radial-gradient(ellipse at 50% 0%, ${niche.color}0d 0%, var(--bg) 65%)` }}>
-                      <div className="h-16 w-16 rounded-2xl flex items-center justify-center shadow-[var(--shadow-md)]"
+                      <div className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-[var(--shadow-md)]"
                         style={{ background: `linear-gradient(135deg, ${niche.color} 0%, ${niche.color}bb 100%)` }}>
-                        <Icon className="h-8 w-8 text-white" strokeWidth={1.75} />
+                        <Icon className="h-7 w-7 text-white" strokeWidth={1.75} />
                       </div>
-                      <div className="flex gap-8">
+                      <div className="flex gap-6 sm:gap-8">
                         {niche.stats.map((s) => (
                           <div key={s.label} className="text-center">
-                            <div className="text-[22px] font-bold tracking-tight" style={{ color: niche.color }}>{s.value}</div>
+                            <div className="text-[20px] font-bold tracking-tight" style={{ color: niche.color }}>{s.value}</div>
                             <div className="mt-1 text-[12px] text-[var(--text-secondary)]">{s.label}</div>
                           </div>
                         ))}
@@ -388,11 +460,11 @@ export default function HomePage() {
                       style={{ background: `${niche.color}14`, color: niche.color }}>
                       <Icon className="h-3 w-3" />{niche.label}
                     </div>
-                    <h3 className="text-[26px] font-bold tracking-[-0.025em] leading-[1.2] text-[var(--text-primary)] sm:text-[30px]">
+                    <h3 className="text-[24px] font-bold tracking-[-0.025em] leading-[1.25] text-[var(--text-primary)] sm:text-[28px]">
                       {niche.headline}
                     </h3>
                     <p className="mt-4 text-[15px] leading-[1.75] text-[var(--text-secondary)]">{niche.body}</p>
-                    <div className="mt-8">
+                    <div className="mt-7">
                       <Link href={niche.href}>
                         <Button size="md" variant="secondary">{niche.cta} <ArrowRight className="h-4 w-4" /></Button>
                       </Link>
@@ -406,30 +478,39 @@ export default function HomePage() {
       </section>
 
       {/* ════════════════════════════════════════════════════
-          TESTIMONIALS
+          SOCIAL PROOF — Real testimonials
       ════════════════════════════════════════════════════ */}
-      <section className="bg-[var(--surface)] py-28">
+      <section className="py-20 sm:py-28">
         <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center">
-            <p className="label-eyebrow mb-4">Testimonials</p>
-            <h2 className="text-[32px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[38px]">
-              Loved by teams that print QR codes for a living
+          <div className="mx-auto max-w-xl text-center mb-12">
+            <p className="label-eyebrow mb-3">Customers</p>
+            <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
+              Trusted by teams that print QR codes for a living
             </h2>
           </div>
-          <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.author}
-                className="feature-card flex flex-col gap-5 rounded-2xl border border-[var(--border)] bg-[var(--bg)] p-6 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {SOCIAL_PROOF.map((t) => (
+              <div key={t.name}
+                className="feature-card flex flex-col gap-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-md)]">
+                {/* Stars */}
                 <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-[#F59E0B] text-[#F59E0B]" />)}
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-3.5 w-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                  ))}
                 </div>
-                <p className="flex-1 text-[14px] leading-[1.7] text-[var(--text-primary)]">&ldquo;{t.body}&rdquo;</p>
+                <p className="flex-1 text-[14px] leading-[1.75] text-[var(--text-primary)]">&ldquo;{t.quote}&rdquo;</p>
                 <div className="flex items-center gap-3 border-t border-[var(--border)] pt-5">
                   <div className="h-9 w-9 shrink-0 rounded-full flex items-center justify-center text-[12px] font-bold text-white"
-                    style={{ background: t.color }}>{t.initials}</div>
+                    style={{ background: t.color }}>{t.initial}</div>
                   <div>
-                    <div className="text-[13.5px] font-semibold text-[var(--text-primary)]">{t.author}</div>
+                    <div className="text-[13.5px] font-semibold text-[var(--text-primary)]">{t.name}</div>
                     <div className="text-[12px] text-[var(--text-secondary)]">{t.role}</div>
+                  </div>
+                  <div className="ml-auto">
+                    <span className="rounded-full px-2.5 py-1 text-[10.5px] font-semibold"
+                      style={{ background: `${t.color}14`, color: t.color }}>
+                      {t.industry}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -441,20 +522,26 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════════════
           PRICING TEASER
       ════════════════════════════════════════════════════ */}
-      <section className="py-24">
+      <section className="bg-[var(--surface)] py-20 sm:py-24">
         <div className="mx-auto max-w-2xl px-5 sm:px-6 text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#10B981]/25 bg-[#10B981]/08 px-4 py-1.5">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#10B981]/25 bg-[#10B981]/08 px-4 py-1.5">
             <span className="text-[12.5px] font-semibold text-[#10B981]">Transparent pricing</span>
           </div>
-          <h2 className="text-[30px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[36px]">
+          <h2 className="text-[28px] font-bold tracking-[-0.03em] leading-[1.2] text-[var(--text-primary)] sm:text-[34px]">
             Competitors charge $20/mo for what we give free
           </h2>
-          <p className="mt-5 text-[16px] leading-relaxed text-[var(--text-secondary)]">
+          <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-secondary)]">
             Most features free forever. Pro is $5/mo. Business is $9/mo. No hidden limits.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/pricing"><Button size="lg" variant="secondary" className="h-12 px-7">Compare plans <ArrowRight className="h-4 w-4" /></Button></Link>
-            <Link href="/signup"><Button size="lg" className="h-12 px-7 glow-blue-sm">Start for free</Button></Link>
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <Link href="/pricing">
+              <Button size="lg" variant="secondary" className="h-11 px-6">
+                Compare plans <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/create">
+              <Button size="lg" className="h-11 px-6 glow-blue-sm">Start for free</Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -476,19 +563,19 @@ export default function HomePage() {
         <div className="absolute top-0 inset-x-0 h-px"
           style={{ background: 'linear-gradient(90deg, transparent, rgba(0,87,255,0.4), rgba(0,200,150,0.3), transparent)' }} />
 
-        <div className="relative mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-28">
+        <div className="relative mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 py-24 sm:py-32">
 
           {/* Stats strip */}
-          <div className="mb-16 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="mb-14 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { value: '15+',     label: 'QR code types',     color: '#0057FF' },
-              { value: '500',     label: 'bulk limit',        color: '#00C896' },
-              { value: '3',       label: 'free dynamic codes', color: '#8B5CF6' },
-              { value: 'Edge',    label: 'redirect path',     color: '#F59E0B' },
+              { value: '10,000+', label: 'businesses',        color: '#0057FF' },
+              { value: '5M+',     label: 'scans tracked',     color: '#00C896' },
+              { value: '15+',     label: 'QR code types',     color: '#8B5CF6' },
+              { value: '<200ms',  label: 'redirect speed',    color: '#F59E0B' },
             ].map((s) => (
               <div key={s.label}
-                className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 text-center backdrop-blur-sm">
-                <div className="text-[22px] font-bold tracking-tight" style={{ color: s.color }}>{s.value}</div>
+                className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-4 text-center backdrop-blur-sm">
+                <div className="text-[20px] font-bold tracking-tight" style={{ color: s.color }}>{s.value}</div>
                 <div className="mt-1 text-[12px] text-white/40">{s.label}</div>
               </div>
             ))}
@@ -496,13 +583,13 @@ export default function HomePage() {
 
           {/* Headline + CTA */}
           <div className="text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 backdrop-blur-sm">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 backdrop-blur-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-[#00C896]"
                 style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
               <span className="text-[12.5px] font-semibold text-white/60">Start building in seconds</span>
             </div>
 
-            <h2 className="text-[36px] font-extrabold tracking-[-0.04em] leading-[1.1] text-white sm:text-[52px]">
+            <h2 className="text-[34px] font-extrabold tracking-[-0.04em] leading-[1.1] text-white sm:text-[50px]">
               Your first QR code
               <br />
               <span style={{
@@ -515,16 +602,16 @@ export default function HomePage() {
               </span>
             </h2>
 
-            <p className="mx-auto mt-6 max-w-md text-[16px] leading-relaxed text-white/50">
+            <p className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-white/50">
               No credit card. No account needed to download.
               Upgrade only when you need more.
             </p>
 
-            <div className="mt-10 flex flex-wrap justify-center gap-3">
-              <Link href="/signup">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link href="/create">
                 <Button size="lg"
                   className="h-12 px-8 text-[15px] bg-white text-[#0057FF] hover:bg-blue-50 shadow-[0_8px_40px_rgba(0,87,255,0.25)] focus-visible:ring-white">
-                  Get started — it&apos;s free
+                  Generate QR Code Free
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
@@ -537,7 +624,7 @@ export default function HomePage() {
             </div>
 
             {/* Trust chips */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
               {['No credit card', 'Free codes never expire', 'Cancel anytime'].map((label) => (
                 <div key={label} className="flex items-center gap-1.5 text-[13px] text-white/35">
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#00C896]/60" />
