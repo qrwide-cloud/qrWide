@@ -110,12 +110,16 @@ export default function HomePage() {
         </div>
 
         <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-10 py-14 lg:flex-row lg:items-center lg:gap-16 lg:min-h-[calc(100vh-62px)] lg:py-20">
+          {/*
+            Mobile: generator on top, copy below (flex-col-reverse)
+            Desktop: copy left, generator right (lg:flex-row)
+          */}
+          <div className="flex flex-col-reverse gap-8 py-8 sm:py-10 lg:flex-row lg:items-center lg:gap-16 lg:min-h-[calc(100vh-62px)] lg:py-20">
 
             {/* ── LEFT: Marketing copy (45%) ── */}
             <div className="flex-[0_0_auto] lg:w-[44%]">
-              {/* Eyebrow */}
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-4 py-1.5">
+              {/* Eyebrow — hidden on mobile to save space */}
+              <div className="mb-5 hidden sm:inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-4 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#0057FF]" style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
                 <span className="text-[12.5px] font-semibold tracking-wide text-[#0057FF]">
                   Free forever · No credit card required
@@ -123,7 +127,7 @@ export default function HomePage() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-[40px] font-extrabold leading-[1.07] tracking-[-0.04em] text-[var(--text-primary)] sm:text-[52px] lg:text-[54px] xl:text-[60px]">
+              <h1 className="text-[34px] font-extrabold leading-[1.07] tracking-[-0.04em] text-[var(--text-primary)] sm:text-[48px] lg:text-[54px] xl:text-[60px]">
                 QR codes that
                 <br />
                 work as hard
@@ -131,44 +135,43 @@ export default function HomePage() {
                 <span className="text-gradient">as you do</span>
               </h1>
 
-              {/* Sub */}
-              <p className="mt-5 text-[16px] leading-[1.75] text-[var(--text-secondary)] max-w-[420px]">
+              {/* Sub — shorter on mobile */}
+              <p className="mt-4 text-[15px] leading-[1.7] text-[var(--text-secondary)] max-w-[420px] sm:text-[16px] sm:leading-[1.75]">
                 Create, track, and update QR codes in seconds.
-                Real-time analytics, custom branding, and 15+ QR types —
-                free forever for the basics.
+                Free forever for the basics — upgrade when you need more.
               </p>
 
               {/* CTAs */}
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap gap-3">
                 <Link href="/create">
-                  <Button size="lg" className="glow-blue-sm h-12 px-7 text-[15px]">
+                  <Button size="lg" className="glow-blue-sm h-11 px-6 text-[15px]">
                     Generate QR Code Free
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
-                  <Button size="lg" variant="secondary" className="h-12 px-7 text-[15px]">
+                  <Button size="lg" variant="secondary" className="h-11 px-6 text-[15px]">
                     View pricing
                   </Button>
                 </Link>
               </div>
 
-              {/* Trust chips */}
-              <div className="mt-6 flex flex-col gap-2">
+              {/* Trust chips — 1 row on mobile, stacked on desktop */}
+              <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 lg:flex-col lg:gap-2">
                 {[
                   'No credit card required',
                   'Free QR codes never expire',
                   'Dynamic links — update anytime',
                 ].map((label) => (
-                  <div key={label} className="flex items-center gap-2 text-[13.5px] text-[var(--text-secondary)]">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-[#10B981]" />
+                  <div key={label} className="flex items-center gap-2 text-[13px] text-[var(--text-secondary)]">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#10B981]" />
                     {label}
                   </div>
                 ))}
               </div>
 
-              {/* Social proof stats */}
-              <div className="mt-8 flex gap-8 border-t border-[var(--border)] pt-7">
+              {/* Social proof stats — hidden on mobile, shown sm+ */}
+              <div className="mt-7 hidden sm:flex gap-8 border-t border-[var(--border)] pt-6">
                 {[
                   { value: '10,000+', label: 'businesses' },
                   { value: '5M+',     label: 'scans tracked' },
