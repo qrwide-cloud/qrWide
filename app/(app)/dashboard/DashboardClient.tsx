@@ -19,6 +19,7 @@ interface DashboardClientProps {
   profile: Profile | null
   initialQRCodes: QRCode[]
   folders: Folder[]
+  showUpgradedBanner?: boolean
 }
 
 const TYPE_BADGE: Record<string, { label: string; variant: 'default' | 'blue' | 'success' | 'warning' }> = {
@@ -31,7 +32,7 @@ const TYPE_BADGE: Record<string, { label: string; variant: 'default' | 'blue' | 
   text: { label: 'Text', variant: 'default' },
 }
 
-export function DashboardClient({ profile, initialQRCodes, folders }: DashboardClientProps) {
+export function DashboardClient({ profile, initialQRCodes, folders, showUpgradedBanner }: DashboardClientProps) {
   const [qrCodes, setQRCodes] = useState<QRCode[]>(initialQRCodes)
   const [search, setSearch] = useState('')
   const [folderFilter, setFolderFilter] = useState('')
@@ -42,6 +43,13 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
 
   const { toast } = useToast()
   const router = useRouter()
+
+  useEffect(() => {
+    if (showUpgradedBanner) {
+      toast(`Welcome to ${profile?.plan ?? 'Pro'}! All features are now unlocked.`)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const baseUrl =
     typeof window !== 'undefined'
@@ -367,16 +375,14 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
                       <Link href={`/share/${qr.shortcode}`}>
                         <Button size="sm">View QR</Button>
                       </Link>
-                      {qr.is_dynamic && (
-                        <Link
-                          href={`/codes/${qr.id}/edit`}
-                          className="inline-flex items-center gap-1 rounded-[8px] border border-[#0057FF]/30 bg-[#0057FF]/06 px-2.5 py-1.5 text-[12px] font-semibold text-[#0057FF] transition-colors hover:bg-[#0057FF]/10"
-                          title="Edit destination"
-                        >
-                          <EditIcon />
-                          Edit
-                        </Link>
-                      )}
+                      <Link
+                        href={`/codes/${qr.id}/edit`}
+                        className="inline-flex items-center gap-1 rounded-[8px] border border-[#0057FF]/30 bg-[#0057FF]/06 px-2.5 py-1.5 text-[12px] font-semibold text-[#0057FF] transition-colors hover:bg-[#0057FF]/10"
+                        title="Edit QR code"
+                      >
+                        <EditIcon />
+                        Edit
+                      </Link>
                       <button
                         onClick={() => {
                           setEditingId(qr.id)

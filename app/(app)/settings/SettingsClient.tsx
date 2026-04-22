@@ -53,6 +53,13 @@ export function SettingsClient({
     }
   }
 
+  async function handleManageBilling() {
+    const res = await fetch('/api/stripe/portal', { method: 'POST' })
+    const { url, error } = await res.json()
+    if (url) window.location.href = url
+    else toast(error ?? 'Could not open billing portal', 'error')
+  }
+
   async function handleUpgrade(plan: 'pro' | 'business') {
     const res = await fetch('/api/stripe/checkout', {
       method: 'POST',
@@ -159,9 +166,20 @@ export function SettingsClient({
             </div>
           )}
           {profile?.plan !== 'free' && (
-            <p className="text-sm text-[var(--text-secondary)]">
-              Manage your subscription in Stripe using the customer portal you configure for production.
-            </p>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide bg-[#0057FF]/10 text-[#0057FF]">
+                  {profile?.plan}
+                </span>
+                <span className="text-sm text-[var(--text-secondary)]">Active subscription</span>
+              </div>
+              <Button variant="secondary" size="sm" onClick={handleManageBilling}>
+                Manage billing & invoices →
+              </Button>
+              <p className="text-xs text-[var(--text-tertiary)]">
+                Cancel, change plan, or download invoices via the Stripe customer portal.
+              </p>
+            </div>
           )}
         </Card>
 

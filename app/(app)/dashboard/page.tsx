@@ -6,7 +6,11 @@ import { DashboardClient } from './DashboardClient'
 export const metadata: Metadata = { title: 'Dashboard' }
 export const dynamic = 'force-dynamic'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { upgraded?: string }
+}) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -30,6 +34,7 @@ export default async function DashboardPage() {
       profile={profile}
       initialQRCodes={qrCodes ?? []}
       folders={folders ?? []}
+      showUpgradedBanner={searchParams.upgraded === 'true'}
     />
   )
 }

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { QRMark } from '@/components/layout/Navbar'
 import type { User } from '@supabase/supabase-js'
 
 interface Profile {
@@ -18,10 +19,10 @@ interface AppSidebarProps {
 }
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard', icon: GridIcon },
-  { href: '/create', label: 'Create QR', icon: PlusIcon },
-  { href: '/bulk', label: 'Bulk Create', icon: LayersIcon },
-  { href: '/settings', label: 'Settings', icon: GearIcon },
+  { href: '/dashboard', label: 'My Codes',   icon: GridIcon },
+  { href: '/create',    label: 'Create QR',  icon: PlusIcon },
+  { href: '/bulk',      label: 'Bulk Create', icon: LayersIcon },
+  { href: '/settings',  label: 'Settings',   icon: GearIcon },
 ]
 
 export function AppSidebar({ user, profile }: AppSidebarProps) {
@@ -42,20 +43,11 @@ export function AppSidebar({ user, profile }: AppSidebarProps) {
     <div className="flex h-full flex-col">
       {/* Logo */}
       <div className="flex items-center gap-2 px-4 py-5 border-b border-[var(--border)]">
-        <Link href="/" className="flex items-center gap-2 font-bold text-[#0066FF] text-lg">
-          <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-            <rect width="12" height="12" rx="2" fill="#0066FF" />
-            <rect x="16" width="12" height="12" rx="2" fill="#0066FF" />
-            <rect y="16" width="12" height="12" rx="2" fill="#0066FF" />
-            <rect x="16" y="16" width="5" height="5" rx="1" fill="#0066FF" />
-            <rect x="23" y="16" width="5" height="5" rx="1" fill="#00D4AA" />
-            <rect x="16" y="23" width="5" height="5" rx="1" fill="#00D4AA" />
-            <rect x="23" y="23" width="5" height="5" rx="1" fill="#0066FF" />
-            <rect x="4" y="4" width="4" height="4" rx="0.5" fill="white" />
-            <rect x="20" y="4" width="4" height="4" rx="0.5" fill="white" />
-            <rect x="4" y="20" width="4" height="4" rx="0.5" fill="white" />
-          </svg>
-          QRWide
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <QRMark size={28} />
+          <span className="font-bold text-[15px] tracking-[-0.02em] text-[var(--text-primary)] group-hover:text-[#0057FF] transition-colors">
+            QRWide
+          </span>
         </Link>
       </div>
 

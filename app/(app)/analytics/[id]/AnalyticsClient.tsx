@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -106,6 +107,16 @@ export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      {/* Back nav */}
+      <div className="flex items-center gap-3 mb-6">
+        <Link href="/dashboard" className="flex items-center gap-1.5 text-[13px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          Dashboard
+        </Link>
+        <span className="text-[var(--border-strong)]">/</span>
+        <span className="text-[13px] text-[var(--text-secondary)] truncate max-w-[200px]">{qr.name}</span>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-8">
         <div>
@@ -130,19 +141,23 @@ export function AnalyticsClient({ qr, initialScans, plan }: AnalyticsClientProps
             <button onClick={copyShortlink} className="text-xs text-[#0066FF] hover:underline">Copy</button>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/codes/${qr.id}/edit`}>
+            <Button variant="secondary" size="sm">Edit QR</Button>
+          </Link>
           <Button variant="secondary" size="sm" onClick={() => fetchScans(range)}>
-            {loading ? 'Refreshing...' : 'Refresh'}
+            {loading ? (
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#0057FF] animate-pulse" />
+                Refreshing…
+              </span>
+            ) : 'Refresh'}
           </Button>
           <a href={`/share/${qr.shortcode}`}>
-            <Button variant="secondary" size="sm">
-              Share page
-            </Button>
+            <Button variant="secondary" size="sm">Share page</Button>
           </a>
           {plan !== 'free' && (
-            <Button variant="secondary" size="sm" onClick={exportCSV}>
-              Export CSV
-            </Button>
+            <Button variant="secondary" size="sm" onClick={exportCSV}>Export CSV</Button>
           )}
         </div>
       </div>
