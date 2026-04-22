@@ -243,21 +243,21 @@ export function DashboardClient({ profile, initialQRCodes, folders, showUpgraded
   const hasScan = totalScans > 0
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
+    <div className="mx-auto max-w-6xl p-4 md:p-8 overflow-x-hidden">
+      <div className="mb-8 flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">Dashboard</h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <p className="mt-1 text-sm text-[var(--text-secondary)] hidden sm:block">
             Press <kbd className="rounded border border-[var(--border)] bg-[var(--surface)] px-1 font-mono text-xs">N</kbd> for new ·{' '}
             <kbd className="rounded border border-[var(--border)] bg-[var(--surface)] px-1 font-mono text-xs">/</kbd> to search
           </p>
         </div>
-        <div className="flex gap-2">
-          <Link href="/bulk">
+        <div className="flex gap-2 shrink-0">
+          <Link href="/bulk" className="hidden sm:block">
             <Button variant="secondary" size="sm">Bulk create</Button>
           </Link>
           <Link href="/create">
-            <Button size="sm">+ New QR code</Button>
+            <Button size="sm">+ New</Button>
           </Link>
         </div>
       </div>
@@ -320,7 +320,7 @@ export function DashboardClient({ profile, initialQRCodes, folders, showUpgraded
           placeholder="Search QR codes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="min-w-[200px] rounded-[8px] border border-[var(--border)] bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF] dark:bg-[#141414] h-9"
+          className="flex-1 min-w-0 sm:flex-none sm:min-w-[200px] rounded-[8px] border border-[var(--border)] bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#0066FF] dark:bg-[#141414] h-9"
         />
         {folders.length > 0 ? (
           <select
@@ -451,6 +451,21 @@ export function DashboardClient({ profile, initialQRCodes, folders, showUpgraded
                         <CopyIcon />
                         Copy link
                       </button>
+                      {/* Mobile-only: analytics + delete inline */}
+                      <Link
+                        href={`/analytics/${qr.id}`}
+                        className="sm:hidden inline-flex items-center gap-1 rounded-[8px] border border-[var(--border)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+                      >
+                        <ChartIcon />
+                        Analytics
+                      </Link>
+                      <button
+                        onClick={() => deleteQR(qr)}
+                        className="sm:hidden inline-flex items-center gap-1 rounded-[8px] border border-[var(--border)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[#EF4444]"
+                      >
+                        <TrashIcon />
+                        Delete
+                      </button>
                     </div>
                   </div>
 
@@ -478,7 +493,7 @@ export function DashboardClient({ profile, initialQRCodes, folders, showUpgraded
                     />
                   </button>
 
-                  <div className="flex flex-shrink-0 items-center gap-1">
+                  <div className="hidden sm:flex flex-shrink-0 items-center gap-1">
                     <Link
                       href={`/analytics/${qr.id}`}
                       className="rounded-[6px] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--text-primary)]"
