@@ -191,7 +191,7 @@ export function HeroQRGenerator() {
       </div>
 
       {/* ── Body ── */}
-      <div className="p-6">
+      <div className="p-6 transition-all duration-200">
         {showProTeaser ? (
           /* ── Pro teaser ── */
           <div className="flex flex-col gap-5">
@@ -254,7 +254,8 @@ export function HeroQRGenerator() {
               </div>
             </div>
 
-            {/* Input fields */}
+            {/* Input fields — fixed min-height prevents QR preview jumping when switching types */}
+            <div className="min-h-[160px]">
             {activeType === 'url' && (
               <div className="relative">
                 <Input
@@ -316,6 +317,7 @@ export function HeroQRGenerator() {
                 className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3.5 py-2.5 text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[#0057FF]/50 focus:ring-2 focus:ring-[#0057FF]/15 resize-none transition-all"
               />
             )}
+            </div>
 
             {/* QR Preview */}
             <div className="flex justify-center">

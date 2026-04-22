@@ -192,6 +192,18 @@ a:focus-visible {
   color: var(--text-primary);
 }
 
+/* ── Mobile: prevent iOS Safari auto-zoom on input focus ── */
+@media (max-width: 768px) {
+  input[type], textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Prevent 300ms tap delay and double-tap zoom on interactive elements ── */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
 /* ── Tap highlight removal on mobile ── */
 * {
   -webkit-tap-highlight-color: transparent;
