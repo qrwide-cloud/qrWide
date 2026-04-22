@@ -3,6 +3,11 @@ const defaultDistDir = process.env.NODE_ENV === 'development' ? '.next-dev' : '.
 
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || defaultDistDir,
+  async rewrites() {
+    return [
+      { source: '/favicon.ico', destination: '/icon' },
+    ]
+  },
   eslint: {
     // Use our own ESLint config, Next.js 14 lint plugin is incompatible with ESLint 9
     ignoreDuringBuilds: true,
