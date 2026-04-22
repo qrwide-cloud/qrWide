@@ -19,6 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrwide.com'),
+  applicationName: 'QRWide',
   title: {
     default: 'QRWide — Free QR Code Generator with Analytics',
     template: '%s | QRWide',
@@ -38,12 +39,20 @@ export const metadata: Metadata = {
     creator: '@qrwide',
   },
   robots: { index: true, follow: true },
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'QRWide',
+  },
+  formatDetection: { telephone: false },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="theme-color" content="#0057FF" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
