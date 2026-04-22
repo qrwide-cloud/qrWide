@@ -13,9 +13,14 @@ export type QRType =
 export interface QRStyle {
   foreground?: string
   background?: string
-  dotStyle?: 'square' | 'rounded' | 'dots' | 'classy'
-  cornerStyle?: 'square' | 'rounded' | 'extra-rounded'
+  cornerColor?: string         // outer corner frame color (defaults to foreground)
+  cornerDotColor?: string      // inner corner dot color (defaults to cornerColor)
+  dotStyle?: 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded'
+  cornerStyle?: 'square' | 'extra-rounded' | 'dot'
+  cornerDotStyle?: 'square' | 'dot'
   logoUrl?: string
+  logoSize?: number            // 0.1 – 0.5, default 0.3
+  errorCorrection?: 'L' | 'M' | 'Q' | 'H'
   frame?: 'none' | 'simple' | 'rounded' | 'speech-bubble'
   frameText?: string
   size?: number
