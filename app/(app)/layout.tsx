@@ -25,8 +25,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
       <AppSidebar user={user} profile={profile} />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 min-w-0 flex flex-col">
+        {/* Mobile: pad below fixed top bar */}
+        <div className="md:hidden h-14 shrink-0" />
         {children}
+        {/* Mobile: pad above fixed bottom tab bar */}
+        <div className="md:hidden shrink-0" style={{ height: 'calc(56px + env(safe-area-inset-bottom, 0px))' }} />
       </main>
     </div>
   )
