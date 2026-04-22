@@ -367,6 +367,16 @@ export function DashboardClient({ profile, initialQRCodes, folders }: DashboardC
                       <Link href={`/share/${qr.shortcode}`}>
                         <Button size="sm">View QR</Button>
                       </Link>
+                      {qr.is_dynamic && (
+                        <Link
+                          href={`/codes/${qr.id}/edit`}
+                          className="inline-flex items-center gap-1 rounded-[8px] border border-[#0057FF]/30 bg-[#0057FF]/06 px-2.5 py-1.5 text-[12px] font-semibold text-[#0057FF] transition-colors hover:bg-[#0057FF]/10"
+                          title="Edit destination"
+                        >
+                          <EditIcon />
+                          Edit
+                        </Link>
+                      )}
                       <button
                         onClick={() => {
                           setEditingId(qr.id)
