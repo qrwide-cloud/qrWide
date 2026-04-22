@@ -220,10 +220,10 @@ export default function HomePage() {
             {/* Copy — left */}
             <div className="flex-1 mt-6 lg:mt-0 lg:max-w-[520px]">
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-3.5 py-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#0057FF]"
+                <span className="h-1.5 w-1.5 rounded-full bg-[#00C896]"
                   style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
                 <span className="text-[12px] font-semibold tracking-wide text-[#0057FF]">
-                  Free forever · No credit card required
+                  Trusted by 40,000+ businesses
                 </span>
               </div>
 
@@ -493,10 +493,11 @@ export default function HomePage() {
           <div className="text-center mb-12">
             <p className="label-eyebrow mb-3">Platform</p>
             <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[36px]">
-              Everything you need. Nothing you don't.
+              Everything you need to ship{' '}
+              <span className="text-gradient">serious QR campaigns</span>
             </h2>
             <p className="mt-3 text-[15px] text-[var(--text-secondary)] max-w-lg mx-auto">
-              Built for businesses that depend on QR codes — not for occasional hobbyist use.
+              A complete toolkit for marketers, event organizers, restaurants, and product teams.
             </p>
           </div>
 
@@ -621,7 +622,7 @@ export default function HomePage() {
                 </p>
                 <div className="mt-6 flex items-center gap-3 border-t border-[var(--border)] pt-5">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white"
-                    style={{ background: t.color }}>{t.initial}</div>
+                    style={{ background: 'linear-gradient(135deg, #0057FF 0%, #00C896 100%)' }}>{t.initial}</div>
                   <div className="min-w-0">
                     <div className="text-[13.5px] font-semibold text-[var(--text-primary)]">{t.name}</div>
                     <div className="text-[12px] text-[var(--text-secondary)] truncate">{t.role}</div>

@@ -113,7 +113,7 @@ export function PricingPlansClient() {
                   'ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold',
                   billingCycle === 'yearly' ? 'bg-white/20 text-white' : 'bg-[#10B981]/15 text-[#10B981]',
                 ].join(' ')}>
-                  Save 18%
+                  Save 20%
                 </span>
               )}
             </button>
