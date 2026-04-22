@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { MobileStickyBar } from '@/components/layout/MobileStickyBar'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
@@ -9,8 +10,9 @@ export default async function MarketingLayout({ children }: { children: React.Re
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar user={user} />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-20 md:pb-0">{children}</main>
       <Footer />
+      <MobileStickyBar user={user} />
     </div>
   )
 }

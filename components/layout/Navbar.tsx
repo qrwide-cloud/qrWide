@@ -166,14 +166,23 @@ export function Navbar({ user }: NavbarProps) {
           )}
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface)] transition-colors"
-          onClick={() => { setMobileOpen(!mobileOpen); setOpenDropdown(null) }}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {/* Mobile: quick CTA + hamburger */}
+        <div className="md:hidden flex items-center gap-2">
+          {!user && !mobileOpen && (
+            <Link href="/signup" onClick={closeAll}
+              className="rounded-lg bg-[#0057FF] px-3.5 py-1.5 text-[13px] font-semibold text-white
+                         shadow-[0_2px_8px_rgba(0,87,255,0.3)]">
+              Sign up
+            </Link>
+          )}
+          <button
+            className="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface)] transition-colors"
+            onClick={() => { setMobileOpen(!mobileOpen); setOpenDropdown(null) }}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}

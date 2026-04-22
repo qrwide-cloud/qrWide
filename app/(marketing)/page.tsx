@@ -214,11 +214,11 @@ export default function HomePage() {
           style={{ background: 'radial-gradient(circle at 90% 10%, rgba(0,200,150,0.05) 0%, transparent 60%)' }} />
 
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex flex-col-reverse pt-4 pb-10 sm:pt-6 sm:pb-12
+          <div className="flex flex-col pt-8 pb-10 sm:pt-10 sm:pb-12
                           lg:flex-row lg:items-center lg:gap-12 lg:pt-10 lg:pb-16 xl:pt-12 xl:pb-20">
 
             {/* Copy — left */}
-            <div className="flex-1 mt-6 lg:mt-0 lg:max-w-[520px]">
+            <div className="flex-1 lg:max-w-[520px]">
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#0057FF]/20 bg-[#0057FF]/06 px-3.5 py-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#00C896]"
                   style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
@@ -239,15 +239,15 @@ export default function HomePage() {
                 custom branding, and 15+ QR types — free forever for the basics.
               </p>
 
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/create">
-                  <Button size="lg" className="glow-blue-sm h-12 px-7 text-[15px] font-semibold">
+              <div className="mt-7 flex flex-col sm:flex-row gap-3">
+                <Link href="/create" className="w-full sm:w-auto">
+                  <Button size="lg" className="glow-blue-sm h-12 px-7 text-[15px] font-semibold w-full sm:w-auto">
                     Generate QR Code Free
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/pricing">
-                  <Button size="lg" variant="secondary" className="h-12 px-7 text-[15px]">
+                <Link href="/pricing" className="w-full sm:w-auto">
+                  <Button size="lg" variant="secondary" className="h-12 px-7 text-[15px] w-full sm:w-auto">
                     View pricing
                   </Button>
                 </Link>
@@ -262,7 +262,7 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <div className="mt-8 hidden sm:grid grid-cols-3 gap-6 border-t border-[var(--border)] pt-7">
+              <div className="mt-8 grid grid-cols-3 gap-4 sm:gap-6 border-t border-[var(--border)] pt-7">
                 {[
                   { value: '10,000+', label: 'businesses using QRWide' },
                   { value: '5M+',     label: 'scans tracked' },
@@ -277,8 +277,11 @@ export default function HomePage() {
             </div>
 
             {/* Generator — right */}
-            <div className="flex-1 flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-[500px]">
+            <div className="flex-1 flex flex-col justify-center lg:justify-end mt-10 lg:mt-0">
+              <p className="lg:hidden text-[12px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider mb-3 text-center">
+                Try it — no account needed
+              </p>
+              <div className="relative w-full max-w-[500px] mx-auto lg:mx-0">
                 <div className="absolute -inset-6 -z-10 rounded-[40px] blur-3xl"
                   style={{ background: 'radial-gradient(ellipse, rgba(0,87,255,0.1) 0%, transparent 70%)' }} />
                 <HeroQRGenerator />
@@ -294,7 +297,8 @@ export default function HomePage() {
       ══════════════════════════════════════════════════════ */}
       <div className="border-y border-[var(--border)] bg-[var(--surface)]">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 py-4">
+          <div className="flex items-center gap-x-7 py-4 overflow-x-auto scrollbar-none px-6
+                          sm:flex-wrap sm:justify-center sm:gap-x-10 sm:gap-y-3 sm:overflow-visible sm:px-0">
             {[
               { icon: Gauge,     label: 'Sub-200ms redirects' },
               { icon: Shield,    label: 'Privacy-first tracking' },
@@ -302,7 +306,7 @@ export default function HomePage() {
               { icon: Globe,     label: '190+ countries' },
               { icon: BarChart3, label: 'Real-time analytics' },
             ].map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-2 text-[13px] font-medium text-[var(--text-secondary)]">
+              <div key={label} className="flex shrink-0 items-center gap-2 text-[13px] font-medium text-[var(--text-secondary)]">
                 <Icon className="h-3.5 w-3.5 shrink-0 text-[#0057FF]" />
                 {label}
               </div>
