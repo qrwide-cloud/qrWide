@@ -77,7 +77,7 @@ export function QRPreview({ content, style = {}, size = 280, className = '' }: Q
           imageSize: clampedLogoSize,
           hideBackgroundDots: true,
         },
-        qrOptions: { errorCorrectionLevel: (errorCorrection ?? 'H') as const },
+        qrOptions: { errorCorrectionLevel: (errorCorrection ?? 'H') as 'L' | 'M' | 'Q' | 'H' },
       }
 
       if (qrRef.current) {
