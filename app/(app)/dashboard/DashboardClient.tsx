@@ -8,8 +8,10 @@ import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
 import { useToast } from '@/components/ui/Toast'
 import { QRPreview } from '@/components/qr/QRPreview'
+import { OnboardingBanner } from '@/components/dashboard/OnboardingBanner'
 import type { Database, QRStyle } from '@/lib/db/schema'
 import { getSavedQRContent } from '@/lib/qr/saved-content'
+import { getPlanLimits } from '@/lib/plans'
 
 type QRCode = Database['public']['Tables']['qr_codes']['Row']
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -229,6 +231,17 @@ export function DashboardClient({ profile, initialQRCodes, folders, showUpgraded
   const activeCodes = qrCodes.filter((q) => q.is_active).length
   const topCode = [...qrCodes].sort((a, b) => b.total_scans - a.total_scans)[0]
 
+  const plan = (profile?.plan ?? 'free') as 'free' | 'pro' | 'business'
+  const planLimits = getPlanLimits(plan)
+  const dynamicCount = qrCodes.filter((q) => q.is_dynamic).length
+  const dynamicLimit = planLimits.maxDynamicQr
+  const showUsageBar = dynamicLimit !== Infinity
+  const usagePct = showUsageBar ? Math.min((dynamicCount / dynamicLimit) * 100, 100) : 0
+  const usageColor = usagePct >= 100 ? '#EF4444' : usagePct >= 66 ? '#F59E0B' : '#0057FF'
+  const totalScans = qrCodes.reduce((s, q) => s + q.total_scans, 0)
+  const hasQRCodes = qrCodes.length > 0
+  const hasScan = totalScans > 0
+
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-8">
       <div className="mb-8 flex items-center justify-between">
@@ -263,6 +276,42 @@ export function DashboardClient({ profile, initialQRCodes, folders, showUpgraded
           </Card>
         ))}
       </div>
+
+      <OnboardingBanner hasQRCodes={hasQRCodes} hasScan={hasScan} />
+
+      {showUsageBar && (
+        <div className="mb-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[13px] font-medium text-[var(--text-secondary)]">
+              Dynamic QR codes
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-[13px] font-semibold" style={{ color: usageColor }}>
+                {dynamicCount} / {dynamicLimit} used
+              </span>
+              {usagePct >= 66 && (
+                <Link href="/pricing"
+                  className="text-[12px] font-semibold text-[#0057FF] hover:underline">
+                  Upgrade →
+                </Link>
+              )}
+            </div>
+          </div>
+          <div className="h-2 rounded-full bg-[var(--bg)] overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${usagePct}%`, background: usageColor }}
+            />
+          </div>
+          {usagePct >= 100 && (
+            <p className="mt-2 text-[12px] text-[#EF4444]">
+              Limit reached.{' '}
+              <Link href="/pricing" className="font-semibold underline">Upgrade to Pro</Link>
+              {' '}for 50 dynamic codes.
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="mb-6 flex flex-wrap gap-3">
         <input

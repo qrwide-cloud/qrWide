@@ -46,6 +46,7 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
   const [name, setName] = useState('')
   const [saving, setSaving] = useState(false)
   const [testModalOpen, setTestModalOpen] = useState(false)
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { toast } = useToast()
   const router = useRouter()
@@ -115,7 +116,12 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
         }),
       })
       if (res.status === 401) { router.push('/signup?redirectTo=/create'); return }
-      if (!res.ok) { const b = await res.json(); toast(b.error ?? 'Failed to save', 'error'); return }
+      if (!res.ok) {
+        const b = await res.json()
+        if (b.upgradeRequired) { setUpgradeModalOpen(true); return }
+        toast(b.error ?? 'Failed to save', 'error')
+        return
+      }
       const { id } = await res.json()
       localStorage.removeItem('create_qr_data')
       toast('QR code saved!')
@@ -485,6 +491,60 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
           </div>
         </div>
       </div>
+
+      {/* Upgrade modal */}
+      {upgradeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={() => setUpgradeModalOpen(false)}>
+          <div className="bg-[var(--surface)] rounded-3xl p-8 shadow-[var(--shadow-xl)] max-w-sm w-full border border-[var(--border)]"
+            onClick={(e) => e.stopPropagation()}>
+            <div className="text-center mb-6">
+              <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0057FF]/10 mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0057FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+              </div>
+              <h3 className="text-[18px] font-bold text-[var(--text-primary)]">You've hit your free limit</h3>
+              <p className="mt-2 text-[13.5px] text-[var(--text-secondary)] leading-relaxed">
+                The Free plan includes 3 dynamic QR codes. Upgrade to Pro for 50 codes, full analytics, and more.
+              </p>
+            </div>
+
+            <div className="space-y-2.5 mb-6">
+              {[
+                '50 dynamic QR codes (vs 3 on Free)',
+                'Full scan analytics — city, device, browser',
+                'All 10 Pro QR types unlocked',
+                'PDF download + custom logo',
+              ].map((f) => (
+                <div key={f} className="flex items-center gap-2.5 text-[13px] text-[var(--text-primary)]">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7" fill="#00C896" fillOpacity="0.15"/>
+                    <path d="M5 8l2 2 4-4" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {f}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[22px] font-extrabold text-[var(--text-primary)]">$5</span>
+              <span className="text-[13px] text-[var(--text-secondary)]">per month · cancel anytime</span>
+            </div>
+
+            <Link href="/pricing" className="block mb-3">
+              <button className="w-full h-11 rounded-xl bg-[#0057FF] text-white text-[14px] font-semibold
+                                 shadow-[0_4px_16px_rgba(0,87,255,0.3)] hover:bg-[#0049E0] transition-colors">
+                Upgrade to Pro →
+              </button>
+            </Link>
+            <button onClick={() => setUpgradeModalOpen(false)}
+              className="w-full text-[13px] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors py-1">
+              Not now
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Test modal */}
       {testModalOpen && (
