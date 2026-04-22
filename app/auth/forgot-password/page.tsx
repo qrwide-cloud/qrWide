@@ -1,20 +1,14 @@
 import type { Metadata } from 'next'
-
-export const dynamic = 'force-dynamic'
 import Link from 'next/link'
-import { AuthForm } from '@/components/auth/AuthForm'
+import { ForgotPasswordForm } from './ForgotPasswordForm'
 import { QRMark } from '@/components/layout/Navbar'
 
 export const metadata: Metadata = {
-  title: 'Sign up free | QRWide',
+  title: 'Reset password | QRWide',
   robots: { index: false, follow: false },
 }
 
-export default function SignupPage({ searchParams }: { searchParams: { redirectTo?: string } }) {
-  const loginHref = searchParams.redirectTo
-    ? `/login?redirectTo=${encodeURIComponent(searchParams.redirectTo)}`
-    : '/login'
-
+export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[var(--surface)]">
       <Link href="/" className="flex items-center gap-2.5 mb-8 group">
@@ -24,12 +18,14 @@ export default function SignupPage({ searchParams }: { searchParams: { redirectT
         </span>
       </Link>
       <div className="w-full max-w-sm bg-white dark:bg-[#141414] rounded-[16px] border border-[var(--border)] p-8 shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
-        <h1 className="text-xl font-bold text-[var(--text-primary)] mb-1">Create your account</h1>
-        <p className="text-sm text-[var(--text-secondary)] mb-6">Free forever. No credit card required.</p>
-        <AuthForm mode="signup" redirectTo={searchParams.redirectTo} />
+        <h1 className="text-xl font-bold text-[var(--text-primary)] mb-1">Reset your password</h1>
+        <p className="text-sm text-[var(--text-secondary)] mb-6">
+          Enter your email and we'll send you a reset link.
+        </p>
+        <ForgotPasswordForm />
         <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
-          Already have an account?{' '}
-          <Link href={loginHref} className="text-[#0066FF] hover:underline font-medium">Log in</Link>
+          Remember it?{' '}
+          <Link href="/login" className="text-[#0057FF] hover:underline font-medium">Back to login</Link>
         </p>
       </div>
     </div>

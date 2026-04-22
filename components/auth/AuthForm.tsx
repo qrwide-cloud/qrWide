@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useToast } from '@/components/ui/Toast'
@@ -105,19 +106,36 @@ export function AuthForm({ mode, redirectTo = '/dashboard' }: AuthFormProps) {
           required
           autoComplete="email"
         />
-        <Input
-          label="Password"
-          type="password"
-          placeholder={mode === 'signup' ? 'At least 8 characters' : 'Your password'}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-          minLength={8}
-        />
+        <div>
+          <Input
+            label="Password"
+            type="password"
+            placeholder={mode === 'signup' ? 'At least 8 characters' : 'Your password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+            minLength={8}
+          />
+          {mode === 'login' && (
+            <div className="mt-1.5 text-right">
+              <Link href="/auth/forgot-password" className="text-[12px] text-[#0057FF] hover:underline">
+                Forgot password?
+              </Link>
+            </div>
+          )}
+        </div>
         <Button type="submit" className="w-full" loading={loading}>
           {mode === 'signup' ? 'Create free account' : 'Sign in'}
         </Button>
+        {mode === 'signup' && (
+          <p className="text-center text-[11.5px] text-[var(--text-tertiary)]">
+            By creating an account you agree to our{' '}
+            <Link href="/terms" className="underline hover:text-[var(--text-secondary)]">Terms</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="underline hover:text-[var(--text-secondary)]">Privacy Policy</Link>.
+          </p>
+        )}
       </form>
     </div>
   )
