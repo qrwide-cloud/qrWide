@@ -3,9 +3,11 @@ import { SeoHubPage } from '@/components/seo/SeoHubPage'
 import { guidePages } from '@/content/seo/guides'
 
 export const metadata: Metadata = {
-  title: 'QR Code Guides and Tutorials | QRWide',
+  title: { absolute: 'QR Code Guides & Tutorials | QRWide' },
   description:
     'Read QRWide guides on dynamic vs static QR codes, WiFi QR setup, menu QR code creation, tracking, and print best practices.',
+  keywords: ['qr code guide', 'qr code tutorial', 'dynamic qr code guide', 'qr code best practices'],
+  alternates: { canonical: 'https://qrwide.com/guides' },
 }
 
 export default function GuidesHubPage() {

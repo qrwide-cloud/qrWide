@@ -3,9 +3,11 @@ import { SeoHubPage } from '@/components/seo/SeoHubPage'
 import { industryPages } from '@/content/seo/industries'
 
 export const metadata: Metadata = {
-  title: 'QR Code Use Cases by Industry | QRWide',
+  title: { absolute: 'QR Code Use Cases by Industry | QRWide' },
   description:
     'See how restaurants, real estate teams, schools, event organizers, and other industries use QRWide to create and track QR codes.',
+  keywords: ['qr code for restaurant', 'qr code for business', 'qr code use cases', 'industry qr codes'],
+  alternates: { canonical: 'https://qrwide.com/industries' },
 }
 
 export default function IndustriesHubPage() {

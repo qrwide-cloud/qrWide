@@ -37,9 +37,10 @@ const HOME_FAQ = [
 ]
 
 export const metadata: Metadata = {
-  title: 'Free QR Code Generator with Analytics | QRWide',
+  title: { absolute: 'Free QR Code Generator with Analytics | QRWide' },
   description:
     'Create free QR codes that never expire. Dynamic QR codes, real-time analytics, custom designs, and 15+ QR types.',
+  keywords: ['free qr code generator', 'dynamic qr code', 'qr code analytics', 'qr code maker', 'qr code creator'],
   alternates: { canonical: 'https://qrwide.com' },
   openGraph: { url: 'https://qrwide.com' },
 }

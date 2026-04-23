@@ -3,8 +3,10 @@ import { CreateClient } from './CreateClient'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
-  title: 'Create QR Code',
-  description: 'Create a custom QR code in seconds. URL, WiFi, vCard, Email, WhatsApp, and 15+ more types.',
+  title: 'Create & Customize Your QR Code',
+  description: 'Create a custom QR code in seconds. Choose from 15+ types — URL, WiFi, vCard, Email, WhatsApp — and customize colors, shapes, and logo.',
+  keywords: ['create qr code', 'custom qr code', 'qr code maker', 'qr code designer'],
+  alternates: { canonical: 'https://qrwide.com/create' },
 }
 
 export default async function CreatePage() {

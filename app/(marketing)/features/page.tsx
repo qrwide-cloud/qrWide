@@ -13,8 +13,10 @@ import {
 } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Features',
-  description: 'Explore QRWide features: dynamic QR codes, analytics, bulk generation, and multiple QR types.',
+  title: 'QR Code Features — Dynamic, Analytics & Custom Design',
+  description: 'Explore QRWide features: dynamic QR codes, real-time scan analytics, bulk generation, custom branding, and 15+ QR types.',
+  keywords: ['dynamic qr code', 'qr code analytics', 'qr code features', 'qr code tracking', 'custom qr code'],
+  alternates: { canonical: 'https://qrwide.com/features' },
 }
 
 const FEATURES = [
