@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { JetBrains_Mono } from 'next/font/google'
 import { ToastProvider } from '@/components/ui/Toast'
 import { Analytics } from '@vercel/analytics/next'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 
 const inter = Inter({
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </ToastProvider>
         <Analytics />
+        <GoogleAnalytics gaId="G-7GTFKY6H88" />
       </body>
     </html>
   )
