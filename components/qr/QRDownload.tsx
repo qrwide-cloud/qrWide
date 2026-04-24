@@ -9,9 +9,10 @@ interface QRDownloadProps {
   style?: QRStyle
   filename?: string
   showPdf?: boolean
+  onDownload?: (format: 'png' | 'svg' | 'pdf') => void
 }
 
-export function QRDownload({ content, style = {}, filename = 'qrcode', showPdf = false }: QRDownloadProps) {
+export function QRDownload({ content, style = {}, filename = 'qrcode', showPdf = false, onDownload }: QRDownloadProps) {
   const [loading, setLoading] = useState<'png' | 'svg' | 'pdf' | null>(null)
 
   function buildOptions(size: number) {
@@ -64,6 +65,7 @@ export function QRDownload({ content, style = {}, filename = 'qrcode', showPdf =
       const { default: QRCodeStyling } = await import('qr-code-styling')
       const qr = new QRCodeStyling(buildOptions(1200))
       await qr.download({ name: filename, extension: 'png' })
+      onDownload?.('png')
     } finally { setLoading(null) }
   }
 
@@ -73,6 +75,7 @@ export function QRDownload({ content, style = {}, filename = 'qrcode', showPdf =
       const { default: QRCodeStyling } = await import('qr-code-styling')
       const qr = new QRCodeStyling(buildOptions(1200))
       await qr.download({ name: filename, extension: 'svg' })
+      onDownload?.('svg')
     } finally { setLoading(null) }
   }
 

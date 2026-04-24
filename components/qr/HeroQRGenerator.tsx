@@ -9,6 +9,7 @@ import { buildQRContent } from '@/lib/qr/generate'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { ArrowRight, Lock, Wifi, Sparkles } from 'lucide-react'
+import { sendGAEvent } from '@next/third-parties/google'
 
 /* ─────────────────────────────────────────────────────────
    Demo rotation — cycles through 3 examples automatically
@@ -43,8 +44,14 @@ export function HeroQRGenerator() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     const content = buildQRContent(activeType, data)
-    debounceRef.current = setTimeout(() => setDebouncedContent(content), 220)
-  }, [data, activeType])
+    debounceRef.current = setTimeout(() => {
+      setDebouncedContent(content)
+      // Track anonymous QR generation (only real user input, not demo)
+      if (content && !demoMode) {
+        sendGAEvent('event', 'generate_qr_anonymous', { qr_type: activeType })
+      }
+    }, 220)
+  }, [data, activeType, demoMode])
 
   /* ── Run one demo cycle ── */
   const runDemo = useCallback((idx: number) => {
@@ -329,7 +336,9 @@ export function HeroQRGenerator() {
             {/* Actions */}
             {debouncedContent && !isDemo ? (
               <>
-                <QRDownload content={debouncedContent} filename="qrwide-code" />
+                <QRDownload content={debouncedContent} filename="qrwide-code"
+                  onDownload={(ext) => sendGAEvent('event', 'download_qr_anonymous', { format: ext, qr_type: activeType })}
+                />
                 <div className="flex items-center justify-center gap-1.5 text-[13px] text-[var(--text-secondary)]">
                   <Link href="/signup"
                     className="inline-flex items-center gap-1 font-semibold text-[#0057FF] hover:underline">
