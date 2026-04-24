@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { HeroQRGenerator } from '@/components/qr/HeroQRGenerator'
 import { Button } from '@/components/ui/Button'
+import { CinematicStory } from '@/components/home/cinematic'
 import { FREE_TYPES, PRO_TYPES, BUSINESS_TYPES } from '@/lib/qr/types'
 import {
   CheckCircle2, ArrowRight, Lock,
@@ -205,18 +206,21 @@ export default function HomePage() {
       })}} />
 
       {/* ══════════════════════════════════════════════════════
-          HERO
+          CINEMATIC HERO — scroll-driven 3D particle story
+      ══════════════════════════════════════════════════════ */}
+      <CinematicStory />
+
+      {/* ══════════════════════════════════════════════════════
+          GENERATOR — try it free, no account needed
       ══════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden bg-[var(--bg)]">
         <div className="absolute inset-0 -z-10 bg-dot-grid opacity-60" />
         <div className="absolute -z-10 top-0 left-0 right-0 h-[500px]"
           style={{ background: 'radial-gradient(ellipse 80% 60% at 20% -10%, rgba(0,87,255,0.08) 0%, transparent 70%)' }} />
-        <div className="absolute -z-10 top-0 right-0 h-[600px] w-[600px]"
-          style={{ background: 'radial-gradient(circle at 90% 10%, rgba(0,200,150,0.05) 0%, transparent 60%)' }} />
 
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex flex-col pt-8 pb-10 sm:pt-10 sm:pb-12
-                          lg:flex-row lg:items-center lg:gap-12 lg:pt-10 lg:pb-16 xl:pt-12 xl:pb-20">
+          <div className="flex flex-col pt-10 pb-12
+                          lg:flex-row lg:items-center lg:gap-12 lg:py-16 xl:py-20">
 
             {/* Copy — left */}
             <div className="flex-1 lg:max-w-[520px]">
@@ -224,7 +228,7 @@ export default function HomePage() {
                 <span className="h-1.5 w-1.5 rounded-full bg-[#00C896]"
                   style={{ animation: 'pulseGlow 2s ease-in-out infinite' }} />
                 <span className="text-[12px] font-semibold tracking-wide text-[#0057FF]">
-                  Trusted by 40,000+ businesses
+                  No account needed to download
                 </span>
               </div>
 
@@ -243,7 +247,7 @@ export default function HomePage() {
               <div className="mt-7 flex flex-col sm:flex-row gap-3">
                 <Link href="/create" className="w-full sm:w-auto">
                   <Button size="lg" className="glow-blue-sm h-12 px-7 text-[15px] font-semibold w-full sm:w-auto">
-                    Generate QR Code Free
+                    Open Full Creator
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>

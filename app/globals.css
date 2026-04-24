@@ -209,6 +209,22 @@ button, a, [role="button"] {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ── Cinematic scene text entrance ── */
+@keyframes cinematicIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cinematic-scene {
+  animation: cinematicIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes scrollHintFade {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cinematic-scroll-hint {
+  animation: scrollHintFade 0.8s 1.2s ease both;
+}
+
 /* ── QRMark scan-line animation ── */
 @keyframes qrScan {
   0%   { transform: translateY(-100%); opacity: 0; }
