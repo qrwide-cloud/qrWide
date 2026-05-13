@@ -9,10 +9,11 @@ import { QRPreview } from '@/components/qr/QRPreview'
 import { QRDownload } from '@/components/qr/QRDownload'
 import { useToast } from '@/components/ui/Toast'
 import { buildQRContent } from '@/lib/qr/generate'
-import { QR_TYPES, FREE_TYPES, PLAN_LABELS, PLAN_COLORS, type QRTypeConfig } from '@/lib/qr/types'
+import { QR_TYPES, type QRTypeConfig } from '@/lib/qr/types'
 import type { QRType, QRStyle } from '@/lib/db/schema'
-import { getPlanLimits } from '@/lib/plans'
-import { Lock, ArrowRight, Sparkles, Upload, X, RotateCcw } from 'lucide-react'
+import { ArrowRight, Upload, X, RotateCcw, BookmarkPlus, BarChart2, UserPlus } from 'lucide-react'
+
+const BASIC_TYPE_IDS = new Set(['url', 'text', 'wifi', 'vcard'])
 
 /* ─── Color presets ─────────────────────────────────────── */
 const COLOR_PRESETS = [
@@ -189,11 +190,12 @@ function CornerDotBtn({ style, label, active, onClick }: {
 /* ─── Main component ─────────────────────────────────────── */
 interface CreateClientProps {
   userPlan?: 'free' | 'pro' | 'business'
+  isLoggedIn?: boolean
 }
 
 type DesignTab = 'colors' | 'shapes' | 'logo' | 'advanced'
 
-export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
+export function CreateClient({ userPlan = 'free', isLoggedIn = false }: CreateClientProps) {
   const searchParams = useSearchParams()
   const initialType = searchParams.get('type') ?? 'url'
 
@@ -210,18 +212,17 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
     logoSize:       0.3,
     errorCorrection: 'H',
   })
-  const [designTab, setDesignTab] = useState<DesignTab>('colors')
-  const [name, setName]           = useState('')
+  const [designTab, setDesignTab]       = useState<DesignTab>('colors')
+  const [name, setName]                 = useState('')
   const [debouncedContent, setDebouncedContent] = useState('')
-  const [saving, setSaving]       = useState(false)
+  const [saving, setSaving]             = useState(false)
   const [testModalOpen, setTestModalOpen]       = useState(false)
-  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false)
+  const [signUpModalOpen, setSignUpModalOpen]   = useState(false)
 
   const timerRef     = useRef<ReturnType<typeof setTimeout> | null>(null)
   const logoInputRef = useRef<HTMLInputElement>(null)
   const { toast }    = useToast()
   const router       = useRouter()
-  const planLimits   = getPlanLimits(userPlan)
 
   // Restore draft from localStorage
   useEffect(() => {
@@ -254,13 +255,6 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
     setData({})
   }
 
-  function canUse(plan: 'free' | 'pro' | 'business'): boolean {
-    if (plan === 'free') return true
-    if (plan === 'pro') return userPlan === 'pro' || userPlan === 'business'
-    if (plan === 'business') return userPlan === 'business'
-    return false
-  }
-
   function applyPreset(p: typeof COLOR_PRESETS[0]) {
     setStyle((s) => ({ ...s, foreground: p.fg, background: p.bg, cornerColor: p.cf, cornerDotColor: p.cd }))
   }
@@ -275,15 +269,10 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
     e.target.value = ''
   }
 
-  const activeConfig = QR_TYPES.find((t) => t.id === type)
-  const isLocked     = activeConfig ? !canUse(activeConfig.plan) : false
-
-  const freeTypes     = QR_TYPES.filter((t) => t.plan === 'free')
-  const proTypes      = QR_TYPES.filter((t) => t.plan === 'pro')
-  const businessTypes = QR_TYPES.filter((t) => t.plan === 'business')
+  const activeConfig    = QR_TYPES.find((t) => t.id === type)
+  const requiresAccount = !isLoggedIn && !BASIC_TYPE_IDS.has(type)
 
   async function handleSave() {
-    if (isLocked) { router.push('/pricing'); return }
     if (!debouncedContent) { toast('Enter some content first', 'error'); return }
     setSaving(true)
     try {
@@ -298,10 +287,9 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
           isDynamic: true,
         }),
       })
-      if (res.status === 401) { router.push('/signup?redirectTo=/create'); return }
+      if (res.status === 401) { setSignUpModalOpen(true); return }
       if (!res.ok) {
         const b = await res.json()
-        if (b.upgradeRequired) { setUpgradeModalOpen(true); return }
         toast(b.error ?? 'Failed to save', 'error'); return
       }
       const { id } = await res.json()
@@ -313,6 +301,38 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
 
   function renderFields() {
     if (!activeConfig) return null
+    if (requiresAccount) {
+      return (
+        <div className="flex flex-col items-center gap-5 py-4 text-center">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0057FF]/10">
+            <UserPlus className="h-6 w-6 text-[#0057FF]" />
+          </div>
+          <div>
+            <p className="text-[15px] font-semibold text-[var(--text-primary)]">
+              Free account required
+            </p>
+            <p className="mt-1.5 text-[13px] text-[var(--text-secondary)] max-w-xs">
+              <strong className="text-[var(--text-primary)]">{activeConfig.label}</strong> QR codes are available on free accounts. Sign up in 30 seconds — no credit card.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2.5 w-full max-w-xs">
+            <Link href={`/signup?redirectTo=/create?type=${type}`} className="flex-1">
+              <button className="w-full h-10 rounded-xl bg-[#0057FF] text-white text-[13.5px] font-semibold shadow-[0_4px_16px_rgba(0,87,255,0.25)] hover:bg-[#0049E0] transition-colors">
+                Create free account
+              </button>
+            </Link>
+            <Link href={`/login?redirectTo=/create?type=${type}`} className="flex-1">
+              <button className="w-full h-10 rounded-xl border border-[var(--border)] text-[13.5px] font-medium text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-all">
+                Sign in
+              </button>
+            </Link>
+          </div>
+          <p className="text-[11.5px] text-[var(--text-tertiary)]">
+            URL, Text, Wi-Fi & vCard work without an account
+          </p>
+        </div>
+      )
+    }
     return (
       <div className="space-y-4">
         <Input
@@ -377,43 +397,16 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
         })}
         <div className="pt-1 flex flex-wrap items-center gap-4">
           <Button onClick={handleSave} loading={saving} size="lg" className="glow-blue-sm">
+            <BookmarkPlus className="h-4 w-4" />
             Save & Track Scans
           </Button>
-          <p className="text-[12.5px] text-[var(--text-secondary)]">Dynamic — update anytime</p>
-        </div>
-      </div>
-    )
-  }
-
-  function renderInlineUpsell() {
-    if (!activeConfig) return null
-    return (
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3">
-          <Sparkles className="h-4 w-4 shrink-0" style={{ color: PLAN_COLORS[activeConfig.plan].text }} />
-          <p className="text-[13px] text-[var(--text-secondary)]">
-            <span className="font-semibold text-[var(--text-primary)]">{activeConfig.label}</span>
-            {' '}requires {PLAN_LABELS[activeConfig.plan]}
+          <p className="text-[12.5px] text-[var(--text-secondary)]">
+            {isLoggedIn ? 'Dynamic — update anytime' : 'Free account · No credit card'}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => switchType(FREE_TYPES[0])}
-            className="text-[12.5px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-            Use free type
-          </button>
-          <Link href="/pricing">
-            <Button size="sm" className="glow-blue-sm">
-              Upgrade <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </Link>
-        </div>
       </div>
     )
   }
-
-  const activeInFree     = freeTypes.some((t) => t.id === type)
-  const activeInPro      = proTypes.some((t) => t.id === type)
-  const activeInBusiness = businessTypes.some((t) => t.id === type)
 
   /* ─── Design Panel ─────────────────────────────────────── */
   function renderDesignPanel() {
@@ -444,7 +437,6 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
           {/* ── Colors tab ── */}
           {designTab === 'colors' && (
             <>
-              {/* Presets */}
               <div className="space-y-2">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Presets</p>
                 <div className="flex flex-wrap gap-1.5">
@@ -457,9 +449,7 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                   ))}
                 </div>
               </div>
-
               <div className="h-px bg-[var(--border)]" />
-
               <ColorPicker label="Background" value={style.background ?? '#FFFFFF'}
                 onChange={(v) => setStyle((s) => ({ ...s, background: v }))} />
               <ColorPicker label="Foreground (dots)" value={style.foreground ?? '#000000'}
@@ -489,9 +479,7 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                   ))}
                 </div>
               </div>
-
               <div className="h-px bg-[var(--border)]" />
-
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-tertiary)] mb-3">Outer corner</p>
                 <div className="flex gap-2">
@@ -503,9 +491,7 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                   ))}
                 </div>
               </div>
-
               <div className="h-px bg-[var(--border)]" />
-
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-tertiary)] mb-3">Inner corner</p>
                 <div className="flex gap-2">
@@ -523,7 +509,6 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
           {/* ── Logo tab ── */}
           {designTab === 'logo' && (
             <>
-              {/* Upload + clear */}
               <div className="flex gap-2">
                 <button
                   onClick={() => logoInputRef.current?.click()}
@@ -544,8 +529,6 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                 <input ref={logoInputRef} type="file" accept=".png,.jpg,.jpeg,.svg,.webp"
                   className="hidden" onChange={handleLogoUpload} />
               </div>
-
-              {/* Logo size slider */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Logo size</p>
@@ -562,10 +545,7 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                   *.png, *.jpeg, *.svg, *.webp up to 1 MB
                 </p>
               </div>
-
               <div className="h-px bg-[var(--border)]" />
-
-              {/* Logo library */}
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-tertiary)] mb-3">Library</p>
                 <div className="grid grid-cols-4 gap-2">
@@ -635,9 +615,18 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-[26px] font-bold tracking-[-0.025em] text-[var(--text-primary)]">Create QR Code</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-[26px] font-bold tracking-[-0.025em] text-[var(--text-primary)]">
+              Create QR Code
+            </h1>
+            <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#0057FF] text-white shadow-[0_2px_8px_rgba(0,87,255,0.35)]">
+              Beta
+            </span>
+          </div>
           <p className="mt-1 text-[14px] text-[var(--text-secondary)]">
-            Choose a type, fill in the details, then customise the design.
+            All 18 types{' '}
+            <span className="font-semibold text-[var(--text-primary)]">free & unlimited</span>
+            {' '}during beta — URL, Text, Wi-Fi & vCard work instantly. Premium types need a free account.
           </p>
         </div>
 
@@ -647,13 +636,16 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
           <div className="flex-1 space-y-6 min-w-0">
 
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
-              {/* Free */}
+              {/* Type grid */}
               <div className="p-4 border-b border-[var(--border)]">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-[#10B981] mb-3">Free — always</p>
-                <div className="flex flex-wrap gap-2">
-                  {freeTypes.map((t) => {
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-3">
+                  Choose type
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {QR_TYPES.map((t) => {
                     const Icon = t.icon
                     const isActive = type === t.id
+                    const needsAccount = !isLoggedIn && !BASIC_TYPE_IDS.has(t.id)
                     return (
                       <button key={t.id} onClick={() => switchType(t)}
                         className={[
@@ -664,91 +656,18 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                         ].join(' ')}>
                         <Icon className="h-3.5 w-3.5 shrink-0" />
                         {t.label}
+                        {needsAccount && (
+                          <UserPlus className="h-3 w-3 shrink-0 opacity-40 ml-auto" />
+                        )}
                       </button>
                     )
                   })}
                 </div>
-                {activeInFree && activeConfig && (
-                  <div className="mt-5 pt-5 border-t border-[var(--border)]">
-                    {renderFields()}
-                  </div>
-                )}
               </div>
 
-              {/* Pro */}
-              <div className="p-4 border-b border-[var(--border)]">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-[#0057FF]">Pro — $5/mo</p>
-                  {!canUse('pro') && (
-                    <Link href="/pricing" className="text-[11px] font-semibold text-[#0057FF] hover:underline flex items-center gap-1">
-                      Upgrade <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {proTypes.map((t) => {
-                    const Icon = t.icon
-                    const isActive = type === t.id
-                    const unlocked = canUse('pro')
-                    return (
-                      <button key={t.id} onClick={() => switchType(t)}
-                        className={[
-                          'flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium transition-all border',
-                          isActive && unlocked  ? 'bg-[#0057FF] text-white border-[#0057FF] shadow-[0_2px_8px_rgba(0,87,255,0.3)]'
-                          : isActive            ? 'bg-[#0057FF]/10 text-[#0057FF] border-[#0057FF]/30'
-                          : unlocked            ? 'bg-[var(--bg)] text-[var(--text-secondary)] border-[var(--border)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)]'
-                                                : 'bg-[var(--bg)] text-[var(--text-tertiary)] border-[var(--border)] hover:border-[#0057FF]/30',
-                        ].join(' ')}>
-                        <Icon className="h-3.5 w-3.5 shrink-0" />
-                        {t.label}
-                        {!unlocked && <Lock className="h-3 w-3 shrink-0 opacity-50" />}
-                      </button>
-                    )
-                  })}
-                </div>
-                {activeInPro && activeConfig && (
-                  <div className="mt-5 pt-5 border-t border-[var(--border)]">
-                    {isLocked ? renderInlineUpsell() : renderFields()}
-                  </div>
-                )}
-              </div>
-
-              {/* Business */}
+              {/* Form */}
               <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-[#8B5CF6]">Business — $9/mo</p>
-                  {!canUse('business') && (
-                    <Link href="/pricing" className="text-[11px] font-semibold text-[#8B5CF6] hover:underline flex items-center gap-1">
-                      Upgrade <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {businessTypes.map((t) => {
-                    const Icon = t.icon
-                    const isActive = type === t.id
-                    const unlocked = canUse('business')
-                    return (
-                      <button key={t.id} onClick={() => switchType(t)}
-                        className={[
-                          'flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium transition-all border',
-                          isActive && unlocked  ? 'bg-[#8B5CF6] text-white border-[#8B5CF6] shadow-[0_2px_8px_rgba(139,92,246,0.3)]'
-                          : isActive            ? 'bg-[#8B5CF6]/10 text-[#8B5CF6] border-[#8B5CF6]/30'
-                          : unlocked            ? 'bg-[var(--bg)] text-[var(--text-secondary)] border-[var(--border)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)]'
-                                                : 'bg-[var(--bg)] text-[var(--text-tertiary)] border-[var(--border)] hover:border-[#8B5CF6]/30',
-                        ].join(' ')}>
-                        <Icon className="h-3.5 w-3.5 shrink-0" />
-                        {t.label}
-                        {!unlocked && <Lock className="h-3 w-3 shrink-0 opacity-50" />}
-                      </button>
-                    )
-                  })}
-                </div>
-                {activeInBusiness && activeConfig && (
-                  <div className="mt-5 pt-5 border-t border-[var(--border)]">
-                    {isLocked ? renderInlineUpsell() : renderFields()}
-                  </div>
-                )}
+                {renderFields()}
               </div>
             </div>
           </div>
@@ -758,15 +677,18 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
 
             {/* QR Preview card */}
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 flex flex-col items-center gap-4">
-              <div className={debouncedContent && !isLocked ? 'animate-qr-appear' : ''}>
-                <QRPreview content={!isLocked ? debouncedContent : ''} style={style} size={220} />
+              <div className={debouncedContent && !requiresAccount ? 'animate-qr-appear' : ''}>
+                <QRPreview content={!requiresAccount ? debouncedContent : ''} style={style} size={220} />
               </div>
 
-              {!isLocked && debouncedContent ? (
+              {debouncedContent && !requiresAccount ? (
                 <>
                   <div className="w-full">
-                    <QRDownload content={debouncedContent} style={style} filename={name || 'qrcode'} showPdf={planLimits.pdfDownload} />
+                    <QRDownload content={debouncedContent} style={style} filename={name || 'qrcode'} showPdf={true} />
                   </div>
+                  <p className="text-[11px] text-[var(--text-tertiary)] text-center -mt-1">
+                    No account needed to download
+                  </p>
                   <div className="flex items-center gap-3 w-full">
                     <button onClick={() => setTestModalOpen(true)}
                       className="flex-1 text-center text-[13px] text-[#0057FF] hover:underline font-medium">
@@ -785,11 +707,6 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                     </button>
                   </div>
                 </>
-              ) : isLocked ? (
-                <div className="text-center">
-                  <Lock className="h-8 w-8 text-[var(--text-tertiary)] mx-auto mb-2" />
-                  <p className="text-[12.5px] text-[var(--text-secondary)]">Unlock this type to preview</p>
-                </div>
               ) : (
                 <p className="text-[12px] text-[var(--text-tertiary)] text-center">Fill in the form to generate</p>
               )}
@@ -801,27 +718,30 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
         </div>
       </div>
 
-      {/* ── Upgrade modal ── */}
-      {upgradeModalOpen && (
+      {/* ── Sign-up to save modal ── */}
+      {signUpModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-          onClick={() => setUpgradeModalOpen(false)}>
+          onClick={() => setSignUpModalOpen(false)}>
           <div className="bg-[var(--surface)] rounded-3xl p-8 shadow-[var(--shadow-xl)] max-w-sm w-full border border-[var(--border)]"
             onClick={(e) => e.stopPropagation()}>
             <div className="text-center mb-6">
               <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0057FF]/10 mb-4">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0057FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                </svg>
+                <BarChart2 className="h-7 w-7 text-[#0057FF]" />
               </div>
-              <h3 className="text-[18px] font-bold text-[var(--text-primary)]">You've hit your free limit</h3>
+              <h3 className="text-[18px] font-bold text-[var(--text-primary)]">Save & track this QR code</h3>
               <p className="mt-2 text-[13.5px] text-[var(--text-secondary)] leading-relaxed">
-                Free plan includes 3 dynamic QR codes. Upgrade for 50 codes, full analytics, and more.
+                Create a free account to save your QR code and see real-time scan analytics.
               </p>
             </div>
             <div className="space-y-2.5 mb-6">
-              {['50 dynamic QR codes (vs 3 on Free)', 'Full scan analytics — city, device, browser', 'All 10 Pro QR types unlocked', 'PDF download + custom logo'].map((f) => (
-                <div key={f} className="flex items-center gap-2.5 text-[13px] text-[var(--text-primary)]">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              {[
+                'Real-time scan analytics — city, device, browser',
+                'Update the destination URL anytime',
+                'Unlimited QR codes saved to your dashboard',
+                'Free forever — no credit card required',
+              ].map((f) => (
+                <div key={f} className="flex items-start gap-2.5 text-[13px] text-[var(--text-primary)]">
+                  <svg className="shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <circle cx="8" cy="8" r="7" fill="#00C896" fillOpacity="0.15"/>
                     <path d="M5 8l2 2 4-4" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -829,14 +749,19 @@ export function CreateClient({ userPlan = 'free' }: CreateClientProps) {
                 </div>
               ))}
             </div>
-            <Link href="/pricing" className="block mb-3">
+            <Link href="/signup?redirectTo=/create" className="block mb-3">
               <button className="w-full h-11 rounded-xl bg-[#0057FF] text-white text-[14px] font-semibold shadow-[0_4px_16px_rgba(0,87,255,0.3)] hover:bg-[#0049E0] transition-colors">
-                Upgrade to Pro →
+                Create free account <ArrowRight className="inline h-4 w-4 mb-0.5" />
               </button>
             </Link>
-            <button onClick={() => setUpgradeModalOpen(false)}
+            <Link href="/login?redirectTo=/create" className="block mb-3">
+              <button className="w-full h-10 rounded-xl border border-[var(--border)] text-[13.5px] font-medium text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-all">
+                Sign in to existing account
+              </button>
+            </Link>
+            <button onClick={() => setSignUpModalOpen(false)}
               className="w-full text-[13px] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors py-1">
-              Not now
+              Just download below — no account needed
             </button>
           </div>
         </div>

@@ -14,12 +14,12 @@ export interface PlanLimits {
 
 const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   free: {
-    maxDynamicQr: 3,
-    maxBulk: 10,
-    analyticsLevel: 'basic',
-    customLogo: false,
-    watermark: true,
-    pdfDownload: false,
+    maxDynamicQr: Infinity,
+    maxBulk: 100,
+    analyticsLevel: 'full',
+    customLogo: true,
+    watermark: false,
+    pdfDownload: true,
     apiAccess: false,
     customDomain: false,
     teamMembers: 1,

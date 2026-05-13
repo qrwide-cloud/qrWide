@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { HeroQRGenerator } from '@/components/qr/HeroQRGenerator'
 import { Button } from '@/components/ui/Button'
 import { CinematicStory } from '@/components/home/cinematic'
-import { FREE_TYPES, PRO_TYPES, BUSINESS_TYPES } from '@/lib/qr/types'
+import { QR_TYPES } from '@/lib/qr/types'
 import {
-  CheckCircle2, ArrowRight, Lock,
+  CheckCircle2, ArrowRight,
   RefreshCw, BarChart3, Shield, Gauge, Zap, Globe,
   Star, Utensils, Home, Calendar, ScanLine, Download, Settings2, ChevronRight,
 } from 'lucide-react'
@@ -377,24 +377,29 @@ export default function HomePage() {
       <section className="bg-[var(--surface)] py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-10">
-            <p className="label-eyebrow mb-3">15+ QR Types</p>
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <p className="label-eyebrow">18 QR Types</p>
+              <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#0057FF] text-white shadow-[0_2px_8px_rgba(0,87,255,0.35)]">
+                Beta
+              </span>
+            </div>
             <h2 className="text-[28px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[36px]">
               Generate any type of QR code
             </h2>
             <p className="mt-3 text-[15px] text-[var(--text-secondary)] max-w-lg mx-auto">
-              Free types work instantly. Pro and Business types unlock with a subscription.
+              All 18 types are <strong className="text-[var(--text-primary)]">free & unlimited</strong> during beta — no account needed to download.
             </p>
           </div>
 
-          {/* Free types */}
+          {/* All types */}
           <div>
             <div className="mb-4 flex items-center gap-3">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#10B981]">Free — always</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#10B981]">All types — free during beta</span>
               <div className="h-px flex-1 bg-[var(--border)]" />
-              <span className="text-[12px] text-[var(--text-tertiary)]">No account needed</span>
+              <span className="text-[12px] text-[var(--text-tertiary)]">No account needed to download</span>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {FREE_TYPES.map((t) => {
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {QR_TYPES.map((t) => {
                 const Icon = t.icon
                 return (
                   <Link key={t.id} href={`/create?type=${t.id}`}
@@ -406,74 +411,6 @@ export default function HomePage() {
                     <div className="min-w-0">
                       <div className="text-[13.5px] font-semibold text-[var(--text-primary)] truncate">{t.label}</div>
                       <div className="text-[11.5px] text-[var(--text-secondary)] mt-0.5 truncate">{t.description}</div>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Pro types */}
-          <div className="mt-7">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#0057FF]">Pro — $5/mo</span>
-              <div className="h-px flex-1 bg-[var(--border)]" />
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-              {PRO_TYPES.map((t) => {
-                const Icon = t.icon
-                return (
-                  <Link key={t.id} href="/pricing"
-                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4
-                               hover:border-[#0057FF]/25 hover:shadow-[var(--shadow-md)] overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg)]/80 backdrop-blur-[1px]
-                                    opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="flex items-center gap-1 rounded-full bg-[#0057FF] px-3 py-1 text-[11px] font-semibold text-white">
-                        <Lock className="h-3 w-3" /> Pro
-                      </span>
-                    </div>
-                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center opacity-50" style={{ background: t.iconBg }}>
-                      <Icon className="h-[18px] w-[18px]" style={{ color: t.iconColor }} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1">
-                        <span className="text-[13px] font-semibold text-[var(--text-secondary)] truncate">{t.label}</span>
-                        <Lock className="h-3 w-3 shrink-0 text-[var(--text-tertiary)]" />
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Business types */}
-          <div className="mt-7">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#8B5CF6]">Business — $9/mo</span>
-              <div className="h-px flex-1 bg-[var(--border)]" />
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {BUSINESS_TYPES.map((t) => {
-                const Icon = t.icon
-                return (
-                  <Link key={t.id} href="/pricing"
-                    className="group feature-card relative flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4
-                               hover:border-[#8B5CF6]/25 hover:shadow-[var(--shadow-md)] overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg)]/80 backdrop-blur-[1px]
-                                    opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="flex items-center gap-1 rounded-full bg-[#8B5CF6] px-3 py-1 text-[11px] font-semibold text-white">
-                        <Lock className="h-3 w-3" /> Business
-                      </span>
-                    </div>
-                    <div className="shrink-0 h-9 w-9 rounded-lg flex items-center justify-center opacity-50" style={{ background: t.iconBg }}>
-                      <Icon className="h-[18px] w-[18px]" style={{ color: t.iconColor }} />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1">
-                        <span className="text-[13px] font-semibold text-[var(--text-secondary)] truncate">{t.label}</span>
-                        <Lock className="h-3 w-3 shrink-0 text-[var(--text-tertiary)]" />
-                      </div>
                     </div>
                   </Link>
                 )

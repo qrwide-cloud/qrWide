@@ -189,7 +189,7 @@ export function SeoPageTemplate({ page, pathname, breadcrumbs }: SeoPageTemplate
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Link href="/create">
-                    <Button size="md" className="bg-white text-[#0057FF] hover:bg-blue-50 focus-visible:ring-white">
+                    <Button size="md" variant="white">
                       Generate QR Code Free
                       <ArrowRight className="h-4 w-4" />
                     </Button>

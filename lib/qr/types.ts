@@ -98,7 +98,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#EF4444',
     iconBg: 'rgba(239,68,68,0.1)',
     description: 'Pre-fill email address, subject & body',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       { key: 'email', label: 'Email address', type: 'email', placeholder: 'hello@example.com', required: true },
       { key: 'subject', label: 'Subject', type: 'text', placeholder: 'Inquiry from QR code' },
@@ -112,7 +112,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#10B981',
     iconBg: 'rgba(16,185,129,0.1)',
     description: 'Dial a phone number instantly on scan',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       { key: 'phone', label: 'Phone number', type: 'tel', placeholder: '+1 555 123 4567', required: true },
     ],
@@ -124,7 +124,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#F59E0B',
     iconBg: 'rgba(245,158,11,0.1)',
     description: 'Pre-filled text message ready to send',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       { key: 'phone', label: 'Phone number', type: 'tel', placeholder: '+1 555 123 4567', required: true },
       { key: 'message', label: 'Pre-filled message', type: 'textarea', placeholder: 'Hi, I scanned your QR…' },
@@ -137,7 +137,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#25D366',
     iconBg: 'rgba(37,211,102,0.1)',
     description: 'Open WhatsApp chat with pre-filled text',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       { key: 'phone', label: 'WhatsApp number', type: 'tel', placeholder: '+1 555 123 4567', required: true },
       { key: 'message', label: 'Pre-filled message', type: 'textarea', placeholder: 'Hi, I found you via QR…' },
@@ -150,7 +150,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#1877F2',
     iconBg: 'rgba(24,119,242,0.1)',
     description: 'Link directly to a Facebook page or profile',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       { key: 'handle', label: 'Facebook username or page URL', type: 'text', placeholder: 'yourpage', prefix: 'facebook.com/', required: true },
     ],
@@ -162,7 +162,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#E1306C',
     iconBg: 'rgba(225,48,108,0.1)',
     description: 'Drive followers to your Instagram profile',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       { key: 'handle', label: 'Instagram handle', type: 'handle', placeholder: 'yourhandle', prefix: 'instagram.com/', required: true },
     ],
@@ -174,7 +174,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#0A66C2',
     iconBg: 'rgba(10,102,194,0.1)',
     description: 'Share your LinkedIn profile or company page',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       {
         key: 'type', label: 'Profile type', type: 'select',
@@ -190,7 +190,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#010101',
     iconBg: 'rgba(0,0,0,0.08)',
     description: 'Grow your TikTok audience with a QR code',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       { key: 'handle', label: 'TikTok handle', type: 'handle', placeholder: 'yourhandle', prefix: 'tiktok.com/@', required: true },
     ],
@@ -202,7 +202,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#FF0000',
     iconBg: 'rgba(255,0,0,0.08)',
     description: 'Channel, video, or playlist link',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       {
         key: 'linkType', label: 'Link type', type: 'select',
@@ -221,7 +221,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#8B5CF6',
     iconBg: 'rgba(139,92,246,0.1)',
     description: 'Calendar event — adds to phone with one scan',
-    plan: 'pro',
+    plan: 'free',
     fields: [
       { key: 'title', label: 'Event title', type: 'text', placeholder: 'Annual Conference 2026', required: true },
       { key: 'location', label: 'Location', type: 'text', placeholder: 'New York Convention Center' },
@@ -239,7 +239,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#EF4444',
     iconBg: 'rgba(239,68,68,0.1)',
     description: 'Menu, brochure, document — instant download',
-    plan: 'business',
+    plan: 'free',
     fields: [
       { key: 'url', label: 'PDF URL', type: 'url', placeholder: 'https://example.com/menu.pdf', required: true },
     ],
@@ -251,7 +251,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#0057FF',
     iconBg: 'rgba(0,87,255,0.1)',
     description: 'App Store or Google Play direct link',
-    plan: 'business',
+    plan: 'free',
     fields: [
       { key: 'appStore', label: 'Apple App Store URL', type: 'url', placeholder: 'https://apps.apple.com/…' },
       { key: 'playStore', label: 'Google Play URL', type: 'url', placeholder: 'https://play.google.com/…' },
@@ -264,7 +264,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#F59E0B',
     iconBg: 'rgba(245,158,11,0.1)',
     description: 'Photo gallery or single image URL',
-    plan: 'business',
+    plan: 'free',
     fields: [
       { key: 'url', label: 'Image or gallery URL', type: 'url', placeholder: 'https://example.com/gallery', required: true },
       { key: 'title', label: 'Gallery title', type: 'text', placeholder: 'Product Photos' },
@@ -277,7 +277,7 @@ export const QR_TYPES: QRTypeConfig[] = [
     iconColor: '#8B5CF6',
     iconBg: 'rgba(139,92,246,0.1)',
     description: 'YouTube, Vimeo, or any hosted video',
-    plan: 'business',
+    plan: 'free',
     fields: [
       { key: 'url', label: 'Video URL', type: 'url', placeholder: 'https://youtube.com/watch?v=…', required: true },
     ],

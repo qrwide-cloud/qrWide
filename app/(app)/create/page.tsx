@@ -23,5 +23,5 @@ export default async function CreatePage() {
     if (profile?.plan) userPlan = profile.plan
   }
 
-  return <CreateClient userPlan={userPlan} />
+  return <CreateClient userPlan={userPlan} isLoggedIn={!!user} />
 }

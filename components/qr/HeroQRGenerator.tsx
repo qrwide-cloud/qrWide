@@ -4,11 +4,11 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { QRPreview } from './QRPreview'
 import { QRDownload } from './QRDownload'
-import { FREE_TYPES, PRO_TYPES } from '@/lib/qr/types'
+import { QR_TYPES } from '@/lib/qr/types'
 import { buildQRContent } from '@/lib/qr/generate'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import { ArrowRight, Lock, Wifi, Sparkles } from 'lucide-react'
+import { ArrowRight, Wifi } from 'lucide-react'
 import { sendGAEvent } from '@next/third-parties/google'
 
 /* ─────────────────────────────────────────────────────────
@@ -33,7 +33,6 @@ export function HeroQRGenerator() {
   const [demoIndex, setDemoIndex]   = useState(0)
   const [isTyping, setIsTyping]     = useState(false)
   const [debouncedContent, setDebouncedContent] = useState('')
-  const [showProTeaser, setShowProTeaser]       = useState(false)
 
   const timerRef      = useRef<ReturnType<typeof setTimeout> | null>(null)
   const debounceRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -67,7 +66,6 @@ export function HeroQRGenerator() {
     setIsTyping(true)
     setInputVal('')
     setData({})
-    setShowProTeaser(false)
 
     // Typewriter: add one character at a time
     let i = 0
@@ -123,7 +121,6 @@ export function HeroQRGenerator() {
     setInputVal('')
     setData({})
     setActiveType('url')
-    setShowProTeaser(false)
   }
 
   /* ── Update data from user input ── */
@@ -138,16 +135,10 @@ export function HeroQRGenerator() {
     setActiveType(id)
     setData({})
     setInputVal('')
-    setShowProTeaser(false)
   }
 
-  function handleProTab() {
-    handleUserInteract()
-    setShowProTeaser(true)
-  }
-
-  const typeConfig  = FREE_TYPES.find((t) => t.id === activeType)
-  const isDemo      = demoMode && !showProTeaser
+  const typeConfig = QR_TYPES.find((t) => t.id === activeType)
+  const isDemo     = demoMode
   const currentDemo = DEMOS[demoIndex % DEMOS.length]
 
   return (
@@ -156,9 +147,9 @@ export function HeroQRGenerator() {
       {/* ── Tab strip ── */}
       <div className="border-b border-[var(--border)] bg-[var(--bg)] px-4 pt-4">
         <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none pb-0">
-          {FREE_TYPES.map((t) => {
+          {QR_TYPES.map((t) => {
             const Icon = t.icon
-            const isActive = activeType === t.id && !showProTeaser && (!demoMode || currentDemo.type === t.id)
+            const isActive = activeType === t.id && (!demoMode || currentDemo.type === t.id)
             return (
               <button
                 key={t.id}
@@ -176,66 +167,12 @@ export function HeroQRGenerator() {
             )
           })}
 
-          <div className="mx-2 h-5 w-px shrink-0 bg-[var(--border)]" />
-
-          {/* Pro tab */}
-          <button
-            onClick={handleProTab}
-            className={[
-              'flex shrink-0 items-center gap-1.5 rounded-t-lg px-3.5 py-2.5 text-[13px] font-medium border-b-2 transition-all duration-150',
-              showProTeaser
-                ? 'border-[#0057FF] text-[#0057FF] bg-[var(--surface)]'
-                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface)]',
-            ].join(' ')}
-          >
-            <Lock className="h-3 w-3 shrink-0" />
-            <span>More types</span>
-            <span className="rounded-full bg-[#0057FF]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#0057FF]">
-              {PRO_TYPES.length + 4}+
-            </span>
-          </button>
         </div>
       </div>
 
       {/* ── Body ── */}
       <div className="p-6 transition-all duration-200">
-        {showProTeaser ? (
-          /* ── Pro teaser ── */
-          <div className="flex flex-col gap-5">
-            <div className="text-center">
-              <div className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0057FF]/10">
-                <Sparkles className="h-5 w-5 text-[#0057FF]" />
-              </div>
-              <h3 className="text-[15px] font-bold text-[var(--text-primary)]">Unlock 11+ more QR types</h3>
-              <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">
-                Email, Call, SMS, WhatsApp, all social networks, events & more.
-              </p>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {PRO_TYPES.slice(0, 9).map((t) => {
-                const Icon = t.icon
-                return (
-                  <div key={t.id}
-                    className="flex flex-col items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-3">
-                    <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ background: t.iconBg }}>
-                      <Icon className="h-4 w-4" style={{ color: t.iconColor }} />
-                    </div>
-                    <span className="text-[11px] font-medium text-[var(--text-secondary)] text-center leading-tight">{t.label}</span>
-                  </div>
-                )
-              })}
-            </div>
-            <Link href="/signup" className="block">
-              <Button size="md" className="w-full glow-blue-sm">
-                Get started free — unlock all types
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <p className="text-center text-[12px] text-[var(--text-tertiary)]">Pro from $5/mo · Cancel anytime</p>
-          </div>
-
-        ) : (
-          /* ── Main generator ── */
+          {/* ── Main generator ── */}
           <div className="flex flex-col gap-5">
 
             {/* Header row */}
@@ -367,7 +304,6 @@ export function HeroQRGenerator() {
               </p>
             )}
           </div>
-        )}
       </div>
     </div>
   )

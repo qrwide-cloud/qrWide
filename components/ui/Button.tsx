@@ -3,7 +3,7 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'white'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
 }
@@ -31,6 +31,12 @@ const variantClasses: Record<string, string> = {
     'hover:bg-[#DC2626]',
     'focus-visible:ring-[#EF4444]/40',
     'shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_1px_2px_rgba(0,0,0,0.2)]',
+  ].join(' '),
+  white: [
+    'bg-white text-[#0057FF] font-semibold',
+    'hover:bg-blue-50 active:bg-blue-100',
+    'focus-visible:ring-white',
+    'shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_1px_2px_rgba(0,0,0,0.2)]',
   ].join(' '),
 }
 
